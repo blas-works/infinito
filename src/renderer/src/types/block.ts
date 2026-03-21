@@ -1,4 +1,4 @@
-export type View = 'index' | 'notes' | 'config'
+export type View = 'index' | 'notes' | 'config' | 'canvas'
 
 export interface Block {
   id: string

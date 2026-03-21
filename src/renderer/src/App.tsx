@@ -3,10 +3,12 @@ import { AnimatePresence } from 'motion/react'
 import type { View } from '@renderer/types'
 import { windowService } from '@renderer/services'
 import { useBlocks, useSettings } from '@renderer/hooks'
+import { cn } from '@renderer/lib/utils'
 import { TitleBar } from '@renderer/components/layout'
 import { IndexView } from '@renderer/sections/index'
 import { NotesView } from '@renderer/sections/notes'
 import { ConfigView } from '@renderer/sections/config'
+import { CanvasView } from '@renderer/sections/canvas'
 
 export default function App(): React.JSX.Element {
   const [view, setView] = useState<View>('index')
@@ -55,36 +57,40 @@ export default function App(): React.JSX.Element {
         onTogglePin={handleTogglePin}
       />
 
-      <main className="flex-1 overflow-y-auto">
-        <div className="max-w-2xl mx-auto px-4 pt-5">
-          <AnimatePresence mode="wait">
-            {view === 'index' ? (
-              <IndexView
-                dateBlocks={dateBlocks}
-                onSelectDate={handleSelectDate}
-                onAddDay={addNewDay}
-              />
-            ) : view === 'config' ? (
-              <ConfigView
-                settings={settings}
-                onFontSize={setFontSize}
-                onFontFamily={setFontFamily}
-                onCodeTheme={setCodeTheme}
-              />
-            ) : (
-              <NotesView
-                groupedBlocks={groupedBlocks}
-                focusedId={focusedId}
-                collapsedIds={collapsedIds}
-                onFocus={setFocusedId}
-                onUpdate={updateBlock}
-                onAddBlock={addBlock}
-                onToggleCollapse={toggleCollapse}
-                isEmpty={blocks.length === 0}
-              />
-            )}
-          </AnimatePresence>
-        </div>
+      <main className={cn('flex-1', view === 'canvas' ? 'overflow-hidden' : 'overflow-y-auto')}>
+        <AnimatePresence mode="wait">
+          {view === 'canvas' ? (
+            <CanvasView />
+          ) : (
+            <div className="max-w-2xl mx-auto px-4 pt-5">
+              {view === 'index' ? (
+                <IndexView
+                  dateBlocks={dateBlocks}
+                  onSelectDate={handleSelectDate}
+                  onAddDay={addNewDay}
+                />
+              ) : view === 'config' ? (
+                <ConfigView
+                  settings={settings}
+                  onFontSize={setFontSize}
+                  onFontFamily={setFontFamily}
+                  onCodeTheme={setCodeTheme}
+                />
+              ) : (
+                <NotesView
+                  groupedBlocks={groupedBlocks}
+                  focusedId={focusedId}
+                  collapsedIds={collapsedIds}
+                  onFocus={setFocusedId}
+                  onUpdate={updateBlock}
+                  onAddBlock={addBlock}
+                  onToggleCollapse={toggleCollapse}
+                  isEmpty={blocks.length === 0}
+                />
+              )}
+            </div>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   )

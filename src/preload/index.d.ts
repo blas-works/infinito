@@ -10,6 +10,8 @@ interface InfinitoAPI {
   togglePin: () => Promise<boolean>
   closeWindow: () => void
   minimizeWindow: () => void
+  maximizeWindow: () => Promise<boolean>
+  isMaximized: () => Promise<boolean>
   getBlocks: () => Promise<BlockData[]>
   saveBlocks: (blocks: { id: string; content: string }[]) => Promise<void>
 }

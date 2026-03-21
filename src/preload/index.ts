@@ -5,6 +5,8 @@ const api = {
   togglePin: (): Promise<boolean> => ipcRenderer.invoke('toggle-pin'),
   closeWindow: (): void => ipcRenderer.send('close-window'),
   minimizeWindow: (): void => ipcRenderer.send('minimize-window'),
+  maximizeWindow: (): Promise<boolean> => ipcRenderer.invoke('maximize-window'),
+  isMaximized: (): Promise<boolean> => ipcRenderer.invoke('is-maximized'),
   getBlocks: (): Promise<{ id: string; content: string; position: number }[]> =>
     ipcRenderer.invoke('db:get-blocks'),
   saveBlocks: (blocks: { id: string; content: string }[]): Promise<void> =>

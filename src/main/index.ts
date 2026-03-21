@@ -76,6 +76,21 @@ app.whenReady().then(() => {
     mainWindow?.minimize()
   })
 
+  ipcMain.handle('maximize-window', () => {
+    if (!mainWindow) return false
+    if (mainWindow.isMaximized()) {
+      mainWindow.unmaximize()
+      return false
+    } else {
+      mainWindow.maximize()
+      return true
+    }
+  })
+
+  ipcMain.handle('is-maximized', () => {
+    return mainWindow?.isMaximized() ?? false
+  })
+
   createWindow()
 
   app.on('activate', () => {
