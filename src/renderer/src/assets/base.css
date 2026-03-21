@@ -1,0 +1,440 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@theme {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+    Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono',
+    ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+:root {
+  --app-font-size: 12px;
+  --app-font-family: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background: #09090b;
+  color: #fafafa;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+/* Drag region for frameless window */
+.drag-region {
+  -webkit-app-region: drag;
+}
+
+.no-drag {
+  -webkit-app-region: no-drag;
+}
+
+/* Code blocks */
+.prose pre {
+  padding: 0 !important;
+}
+
+.prose pre code,
+pre code,
+pre code.hljs,
+code.hljs {
+  display: block;
+  padding: 0.75rem 1rem !important;
+  overflow-x: auto;
+  background-color: #18181b !important;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* Inline code */
+:not(pre) > code {
+  background-color: #27272a;
+  color: #a1a1aa;
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.25rem;
+  font-size: 0.85em;
+}
+
+/* Syntax highlighting - zinc palette */
+.hljs {
+  background: #18181b;
+  color: #d4d4d8;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #52525b;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-deletion {
+  color: #f87171;
+}
+
+.hljs-string,
+.hljs-addition {
+  color: #86efac;
+}
+
+.hljs-number,
+.hljs-literal {
+  color: #fbbf24;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-built_in {
+  color: #93c5fd;
+}
+
+.hljs-function .hljs-title,
+.hljs-title.function_ {
+  color: #c4b5fd;
+}
+
+.hljs-type,
+.hljs-class .hljs-title {
+  color: #67e8f9;
+}
+
+.hljs-attr,
+.hljs-attribute {
+  color: #fdba74;
+}
+
+.hljs-variable,
+.hljs-template-variable {
+  color: #fca5a5;
+}
+
+.hljs-regexp {
+  color: #fda4af;
+}
+
+.hljs-symbol,
+.hljs-bullet {
+  color: #a78bfa;
+}
+
+.hljs-meta {
+  color: #71717a;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
+/* Tokyo Night */
+.theme-tokyo-night .hljs-keyword,
+.theme-tokyo-night .hljs-selector-tag,
+.theme-tokyo-night .hljs-deletion {
+  color: #bb9af7;
+}
+
+.theme-tokyo-night .hljs-string,
+.theme-tokyo-night .hljs-addition {
+  color: #9ece6a;
+}
+
+.theme-tokyo-night .hljs-number,
+.theme-tokyo-night .hljs-literal {
+  color: #ff9e64;
+}
+
+.theme-tokyo-night .hljs-title,
+.theme-tokyo-night .hljs-section,
+.theme-tokyo-night .hljs-built_in {
+  color: #7aa2f7;
+}
+
+.theme-tokyo-night .hljs-function .hljs-title,
+.theme-tokyo-night .hljs-title.function_ {
+  color: #7dcfff;
+}
+
+.theme-tokyo-night .hljs-type,
+.theme-tokyo-night .hljs-class .hljs-title {
+  color: #2ac3de;
+}
+
+.theme-tokyo-night .hljs-attr,
+.theme-tokyo-night .hljs-attribute {
+  color: #e0af68;
+}
+
+.theme-tokyo-night .hljs-variable,
+.theme-tokyo-night .hljs-template-variable {
+  color: #c0caf5;
+}
+
+.theme-tokyo-night .hljs-comment,
+.theme-tokyo-night .hljs-quote {
+  color: #565f89;
+}
+
+.theme-tokyo-night .hljs-regexp {
+  color: #b4f9f8;
+}
+
+.theme-tokyo-night .hljs-symbol,
+.theme-tokyo-night .hljs-bullet {
+  color: #bb9af7;
+}
+
+/* GitHub Dark */
+.theme-github-dark .hljs-keyword,
+.theme-github-dark .hljs-selector-tag,
+.theme-github-dark .hljs-deletion {
+  color: #ff7b72;
+}
+
+.theme-github-dark .hljs-string,
+.theme-github-dark .hljs-addition {
+  color: #7ee787;
+}
+
+.theme-github-dark .hljs-number,
+.theme-github-dark .hljs-literal {
+  color: #79c0ff;
+}
+
+.theme-github-dark .hljs-title,
+.theme-github-dark .hljs-section,
+.theme-github-dark .hljs-built_in {
+  color: #d2a8ff;
+}
+
+.theme-github-dark .hljs-function .hljs-title,
+.theme-github-dark .hljs-title.function_ {
+  color: #d2a8ff;
+}
+
+.theme-github-dark .hljs-type,
+.theme-github-dark .hljs-class .hljs-title {
+  color: #ffa657;
+}
+
+.theme-github-dark .hljs-attr,
+.theme-github-dark .hljs-attribute {
+  color: #79c0ff;
+}
+
+.theme-github-dark .hljs-variable,
+.theme-github-dark .hljs-template-variable {
+  color: #ffa657;
+}
+
+.theme-github-dark .hljs-comment,
+.theme-github-dark .hljs-quote {
+  color: #8b949e;
+}
+
+.theme-github-dark .hljs-regexp {
+  color: #7ee787;
+}
+
+.theme-github-dark .hljs-symbol,
+.theme-github-dark .hljs-bullet {
+  color: #d2a8ff;
+}
+
+/* Catppuccin Mocha */
+.theme-catppuccin .hljs-keyword,
+.theme-catppuccin .hljs-selector-tag,
+.theme-catppuccin .hljs-deletion {
+  color: #cba6f7;
+}
+
+.theme-catppuccin .hljs-string,
+.theme-catppuccin .hljs-addition {
+  color: #a6e3a1;
+}
+
+.theme-catppuccin .hljs-number,
+.theme-catppuccin .hljs-literal {
+  color: #fab387;
+}
+
+.theme-catppuccin .hljs-title,
+.theme-catppuccin .hljs-section,
+.theme-catppuccin .hljs-built_in {
+  color: #89b4fa;
+}
+
+.theme-catppuccin .hljs-function .hljs-title,
+.theme-catppuccin .hljs-title.function_ {
+  color: #89b4fa;
+}
+
+.theme-catppuccin .hljs-type,
+.theme-catppuccin .hljs-class .hljs-title {
+  color: #f9e2af;
+}
+
+.theme-catppuccin .hljs-attr,
+.theme-catppuccin .hljs-attribute {
+  color: #f38ba8;
+}
+
+.theme-catppuccin .hljs-variable,
+.theme-catppuccin .hljs-template-variable {
+  color: #f5c2e7;
+}
+
+.theme-catppuccin .hljs-comment,
+.theme-catppuccin .hljs-quote {
+  color: #6c7086;
+}
+
+.theme-catppuccin .hljs-regexp {
+  color: #f2cdcd;
+}
+
+.theme-catppuccin .hljs-symbol,
+.theme-catppuccin .hljs-bullet {
+  color: #f5e0dc;
+}
+
+/* Nord */
+.theme-nord .hljs-keyword,
+.theme-nord .hljs-selector-tag,
+.theme-nord .hljs-deletion {
+  color: #81a1c1;
+}
+
+.theme-nord .hljs-string,
+.theme-nord .hljs-addition {
+  color: #a3be8c;
+}
+
+.theme-nord .hljs-number,
+.theme-nord .hljs-literal {
+  color: #b48ead;
+}
+
+.theme-nord .hljs-title,
+.theme-nord .hljs-section,
+.theme-nord .hljs-built_in {
+  color: #88c0d0;
+}
+
+.theme-nord .hljs-function .hljs-title,
+.theme-nord .hljs-title.function_ {
+  color: #88c0d0;
+}
+
+.theme-nord .hljs-type,
+.theme-nord .hljs-class .hljs-title {
+  color: #ebcb8b;
+}
+
+.theme-nord .hljs-attr,
+.theme-nord .hljs-attribute {
+  color: #8fbcbb;
+}
+
+.theme-nord .hljs-variable,
+.theme-nord .hljs-template-variable {
+  color: #d8dee9;
+}
+
+.theme-nord .hljs-comment,
+.theme-nord .hljs-quote {
+  color: #616e88;
+}
+
+.theme-nord .hljs-regexp {
+  color: #ebcb8b;
+}
+
+.theme-nord .hljs-symbol,
+.theme-nord .hljs-bullet {
+  color: #bf616a;
+}
+
+/* Dracula */
+.theme-dracula .hljs-keyword,
+.theme-dracula .hljs-selector-tag,
+.theme-dracula .hljs-deletion {
+  color: #ff79c6;
+}
+
+.theme-dracula .hljs-string,
+.theme-dracula .hljs-addition {
+  color: #f1fa8c;
+}
+
+.theme-dracula .hljs-number,
+.theme-dracula .hljs-literal {
+  color: #bd93f9;
+}
+
+.theme-dracula .hljs-title,
+.theme-dracula .hljs-section,
+.theme-dracula .hljs-built_in {
+  color: #50fa7b;
+}
+
+.theme-dracula .hljs-function .hljs-title,
+.theme-dracula .hljs-title.function_ {
+  color: #50fa7b;
+}
+
+.theme-dracula .hljs-type,
+.theme-dracula .hljs-class .hljs-title {
+  color: #8be9fd;
+}
+
+.theme-dracula .hljs-attr,
+.theme-dracula .hljs-attribute {
+  color: #50fa7b;
+}
+
+.theme-dracula .hljs-variable,
+.theme-dracula .hljs-template-variable {
+  color: #f8f8f2;
+}
+
+.theme-dracula .hljs-comment,
+.theme-dracula .hljs-quote {
+  color: #6272a4;
+}
+
+.theme-dracula .hljs-regexp {
+  color: #ff79c6;
+}
+
+.theme-dracula .hljs-symbol,
+.theme-dracula .hljs-bullet {
+  color: #ffb86c;
+}
