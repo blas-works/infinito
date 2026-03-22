@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/torrescereno/infinito/compare/v1.1.1...v1.1.2) (2026-03-22)
+
+
+### Bug Fixes
+
+* build mac y linux ([9c20124](https://github.com/torrescereno/infinito/commit/9c201240903afe0cc7460d938a623f894cf88764))
+
 ## [1.1.1](https://github.com/torrescereno/infinito/compare/v1.1.0...v1.1.1) (2026-03-22)
 
 
