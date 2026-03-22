@@ -25,6 +25,8 @@ function createWindow(): void {
     app.dock?.setIcon(iconPath)
   }
 
+  const isMac = process.platform === 'darwin'
+
   mainWindow = new BrowserWindow({
     icon,
     width: 420,
@@ -33,8 +35,7 @@ function createWindow(): void {
     minHeight: 300,
     frame: false,
     transparent: false,
-    titleBarStyle: 'hidden',
-    titleBarOverlay: false,
+    ...(isMac ? {} : { titleBarStyle: 'hidden', titleBarOverlay: false }),
     backgroundColor: '#09090b',
     show: false,
     autoHideMenuBar: true,
