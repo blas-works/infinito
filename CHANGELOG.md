@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/torrescereno/infinito/compare/v1.1.3...v1.1.4) (2026-03-22)
+
+
+### Bug Fixes
+
+* generar iconos linux ([c3591c2](https://github.com/torrescereno/infinito/commit/c3591c25ab2eb9479a2f1e53941250fdbf727a7b))
+
 ## [1.1.3](https://github.com/torrescereno/infinito/compare/v1.1.2...v1.1.3) (2026-03-22)
 
 
