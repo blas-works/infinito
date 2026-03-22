@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.6](https://github.com/torrescereno/infinito/compare/v1.1.5...v1.1.6) (2026-03-22)
+
+
+### Bug Fixes
+
+* ci / cd ([191c9f2](https://github.com/torrescereno/infinito/commit/191c9f241fab04b7980aa5ee5c0f49eba2d703c7))
+
 ## [1.1.5](https://github.com/torrescereno/infinito/compare/v1.1.4...v1.1.5) (2026-03-22)
 
 
