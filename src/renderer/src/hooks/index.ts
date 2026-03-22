@@ -1,8 +1,5 @@
 export { useBlocks } from './useBlocks'
 export { useAutoResize } from './useAutoResize'
 export { useSettings } from './useSettings'
-export { useCanvas } from './useCanvas'
-export { useCanvasViewport } from './useCanvasViewport'
-export { useCanvasPointer } from './useCanvasPointer'
 export { useUpdate } from './useUpdate'
 export { useNotesFilter } from './useNotesFilter'

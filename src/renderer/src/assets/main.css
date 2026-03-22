@@ -11,3 +11,28 @@ body {
   min-height: 100vh;
   background: transparent;
 }
+
+/* Excalidraw container needs explicit dimensions */
+.excalidraw-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+/* Prevent Tailwind resets from breaking Excalidraw internals */
+.excalidraw button {
+  all: revert;
+}
+
+.excalidraw input,
+.excalidraw select,
+.excalidraw textarea {
+  all: revert;
+}
+
+.excalidraw label {
+  all: revert;
+}
+
+.excalidraw svg {
+  display: inline;
+}
