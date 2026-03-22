@@ -169,6 +169,9 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Generate icons
+        run: bun run generate:icons
+
       - name: Prepare migrations
         run: |
           Remove-Item -Recurse -Force resources/migrations -ErrorAction SilentlyContinue
@@ -201,6 +204,9 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Generate icons
+        run: bun run generate:icons
+
       - name: Prepare migrations
         run: bun run build:migrations
 
@@ -226,6 +232,9 @@ jobs:
 
       - name: Install dependencies
         run: bun install
+
+      - name: Generate icons
+        run: bun run generate:icons
 
       - name: Prepare migrations
         run: bun run build:migrations
