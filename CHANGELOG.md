@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.3](https://github.com/torrescereno/infinito/compare/v1.1.2...v1.1.3) (2026-03-22)
+
+
+### Bug Fixes
+
+* iconos linux ([4465f90](https://github.com/torrescereno/infinito/commit/4465f90adfe25c861424fd67531e89b2b32b7c1e))
+* se esconde estilo de la barra en mac ([4b00c4a](https://github.com/torrescereno/infinito/commit/4b00c4aeb365ebe647c8624967d137d18876df54))
+
 ## [1.1.2](https://github.com/torrescereno/infinito/compare/v1.1.1...v1.1.2) (2026-03-22)
 
 
