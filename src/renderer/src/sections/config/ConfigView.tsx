@@ -78,13 +78,13 @@ export function ConfigView({
         <h2 className="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-3">
           Font size
         </h2>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 flex-wrap">
           {FONT_SIZES.map((size) => (
             <button
               key={size}
               onClick={() => onFontSize(size)}
               className={cn(
-                'h-7 w-10 rounded-md text-[11px] font-mono transition-colors',
+                'h-7 w-9 rounded-md text-[11px] font-mono transition-colors',
                 settings.fontSize === size
                   ? 'bg-zinc-800 text-zinc-200'
                   : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900'

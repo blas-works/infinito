@@ -440,3 +440,345 @@ code.hljs {
 .theme-dracula .hljs-bullet {
   color: #ffb86c;
 }
+
+/* Solarized Dark */
+.theme-solarized-dark .hljs-keyword,
+.theme-solarized-dark .hljs-selector-tag,
+.theme-solarized-dark .hljs-deletion {
+  color: #859900;
+}
+
+.theme-solarized-dark .hljs-string,
+.theme-solarized-dark .hljs-addition {
+  color: #2aa198;
+}
+
+.theme-solarized-dark .hljs-number,
+.theme-solarized-dark .hljs-literal {
+  color: #d33682;
+}
+
+.theme-solarized-dark .hljs-title,
+.theme-solarized-dark .hljs-section,
+.theme-solarized-dark .hljs-built_in {
+  color: #268bd2;
+}
+
+.theme-solarized-dark .hljs-function .hljs-title,
+.theme-solarized-dark .hljs-title.function_ {
+  color: #268bd2;
+}
+
+.theme-solarized-dark .hljs-type,
+.theme-solarized-dark .hljs-class .hljs-title {
+  color: #b58900;
+}
+
+.theme-solarized-dark .hljs-attr,
+.theme-solarized-dark .hljs-attribute {
+  color: #2aa198;
+}
+
+.theme-solarized-dark .hljs-variable,
+.theme-solarized-dark .hljs-template-variable {
+  color: #cb4b16;
+}
+
+.theme-solarized-dark .hljs-comment,
+.theme-solarized-dark .hljs-quote {
+  color: #586e75;
+}
+
+.theme-solarized-dark .hljs-regexp {
+  color: #dc322f;
+}
+
+.theme-solarized-dark .hljs-symbol,
+.theme-solarized-dark .hljs-bullet {
+  color: #6c71c4;
+}
+
+/* Gruvbox */
+.theme-gruvbox .hljs-keyword,
+.theme-gruvbox .hljs-selector-tag,
+.theme-gruvbox .hljs-deletion {
+  color: #fb4934;
+}
+
+.theme-gruvbox .hljs-string,
+.theme-gruvbox .hljs-addition {
+  color: #b8bb26;
+}
+
+.theme-gruvbox .hljs-number,
+.theme-gruvbox .hljs-literal {
+  color: #d3869b;
+}
+
+.theme-gruvbox .hljs-title,
+.theme-gruvbox .hljs-section,
+.theme-gruvbox .hljs-built_in {
+  color: #83a598;
+}
+
+.theme-gruvbox .hljs-function .hljs-title,
+.theme-gruvbox .hljs-title.function_ {
+  color: #83a598;
+}
+
+.theme-gruvbox .hljs-type,
+.theme-gruvbox .hljs-class .hljs-title {
+  color: #fabd2f;
+}
+
+.theme-gruvbox .hljs-attr,
+.theme-gruvbox .hljs-attribute {
+  color: #8ec07c;
+}
+
+.theme-gruvbox .hljs-variable,
+.theme-gruvbox .hljs-template-variable {
+  color: #fe8019;
+}
+
+.theme-gruvbox .hljs-comment,
+.theme-gruvbox .hljs-quote {
+  color: #928374;
+}
+
+.theme-gruvbox .hljs-regexp {
+  color: #fb4934;
+}
+
+.theme-gruvbox .hljs-symbol,
+.theme-gruvbox .hljs-bullet {
+  color: #d3869b;
+}
+
+/* One Dark */
+.theme-one-dark .hljs-keyword,
+.theme-one-dark .hljs-selector-tag,
+.theme-one-dark .hljs-deletion {
+  color: #c678dd;
+}
+
+.theme-one-dark .hljs-string,
+.theme-one-dark .hljs-addition {
+  color: #98c379;
+}
+
+.theme-one-dark .hljs-number,
+.theme-one-dark .hljs-literal {
+  color: #d19a66;
+}
+
+.theme-one-dark .hljs-title,
+.theme-one-dark .hljs-section,
+.theme-one-dark .hljs-built_in {
+  color: #61afef;
+}
+
+.theme-one-dark .hljs-function .hljs-title,
+.theme-one-dark .hljs-title.function_ {
+  color: #61afef;
+}
+
+.theme-one-dark .hljs-type,
+.theme-one-dark .hljs-class .hljs-title {
+  color: #e5c07b;
+}
+
+.theme-one-dark .hljs-attr,
+.theme-one-dark .hljs-attribute {
+  color: #d19a66;
+}
+
+.theme-one-dark .hljs-variable,
+.theme-one-dark .hljs-template-variable {
+  color: #e06c75;
+}
+
+.theme-one-dark .hljs-comment,
+.theme-one-dark .hljs-quote {
+  color: #5c6370;
+}
+
+.theme-one-dark .hljs-regexp {
+  color: #56b6c2;
+}
+
+.theme-one-dark .hljs-symbol,
+.theme-one-dark .hljs-bullet {
+  color: #c678dd;
+}
+
+/* Monokai */
+.theme-monokai .hljs-keyword,
+.theme-monokai .hljs-selector-tag,
+.theme-monokai .hljs-deletion {
+  color: #f92672;
+}
+
+.theme-monokai .hljs-string,
+.theme-monokai .hljs-addition {
+  color: #e6db74;
+}
+
+.theme-monokai .hljs-number,
+.theme-monokai .hljs-literal {
+  color: #ae81ff;
+}
+
+.theme-monokai .hljs-title,
+.theme-monokai .hljs-section,
+.theme-monokai .hljs-built_in {
+  color: #a6e22e;
+}
+
+.theme-monokai .hljs-function .hljs-title,
+.theme-monokai .hljs-title.function_ {
+  color: #a6e22e;
+}
+
+.theme-monokai .hljs-type,
+.theme-monokai .hljs-class .hljs-title {
+  color: #66d9ef;
+}
+
+.theme-monokai .hljs-attr,
+.theme-monokai .hljs-attribute {
+  color: #a6e22e;
+}
+
+.theme-monokai .hljs-variable,
+.theme-monokai .hljs-template-variable {
+  color: #f8f8f2;
+}
+
+.theme-monokai .hljs-comment,
+.theme-monokai .hljs-quote {
+  color: #75715e;
+}
+
+.theme-monokai .hljs-regexp {
+  color: #f92672;
+}
+
+.theme-monokai .hljs-symbol,
+.theme-monokai .hljs-bullet {
+  color: #ae81ff;
+}
+
+/* Rosé Pine */
+.theme-rose-pine .hljs-keyword,
+.theme-rose-pine .hljs-selector-tag,
+.theme-rose-pine .hljs-deletion {
+  color: #eb6f92;
+}
+
+.theme-rose-pine .hljs-string,
+.theme-rose-pine .hljs-addition {
+  color: #f6c177;
+}
+
+.theme-rose-pine .hljs-number,
+.theme-rose-pine .hljs-literal {
+  color: #ebbcba;
+}
+
+.theme-rose-pine .hljs-title,
+.theme-rose-pine .hljs-section,
+.theme-rose-pine .hljs-built_in {
+  color: #9ccfd8;
+}
+
+.theme-rose-pine .hljs-function .hljs-title,
+.theme-rose-pine .hljs-title.function_ {
+  color: #9ccfd8;
+}
+
+.theme-rose-pine .hljs-type,
+.theme-rose-pine .hljs-class .hljs-title {
+  color: #c4a7e7;
+}
+
+.theme-rose-pine .hljs-attr,
+.theme-rose-pine .hljs-attribute {
+  color: #31748f;
+}
+
+.theme-rose-pine .hljs-variable,
+.theme-rose-pine .hljs-template-variable {
+  color: #e0def4;
+}
+
+.theme-rose-pine .hljs-comment,
+.theme-rose-pine .hljs-quote {
+  color: #6e6a86;
+}
+
+.theme-rose-pine .hljs-regexp {
+  color: #eb6f92;
+}
+
+.theme-rose-pine .hljs-symbol,
+.theme-rose-pine .hljs-bullet {
+  color: #c4a7e7;
+}
+
+/* Ayu Dark */
+.theme-ayu-dark .hljs-keyword,
+.theme-ayu-dark .hljs-selector-tag,
+.theme-ayu-dark .hljs-deletion {
+  color: #ff8f40;
+}
+
+.theme-ayu-dark .hljs-string,
+.theme-ayu-dark .hljs-addition {
+  color: #aad94c;
+}
+
+.theme-ayu-dark .hljs-number,
+.theme-ayu-dark .hljs-literal {
+  color: #d2a6ff;
+}
+
+.theme-ayu-dark .hljs-title,
+.theme-ayu-dark .hljs-section,
+.theme-ayu-dark .hljs-built_in {
+  color: #59c2ff;
+}
+
+.theme-ayu-dark .hljs-function .hljs-title,
+.theme-ayu-dark .hljs-title.function_ {
+  color: #ffb454;
+}
+
+.theme-ayu-dark .hljs-type,
+.theme-ayu-dark .hljs-class .hljs-title {
+  color: #e6b450;
+}
+
+.theme-ayu-dark .hljs-attr,
+.theme-ayu-dark .hljs-attribute {
+  color: #59c2ff;
+}
+
+.theme-ayu-dark .hljs-variable,
+.theme-ayu-dark .hljs-template-variable {
+  color: #f07178;
+}
+
+.theme-ayu-dark .hljs-comment,
+.theme-ayu-dark .hljs-quote {
+  color: #acb6bf8c;
+}
+
+.theme-ayu-dark .hljs-regexp {
+  color: #95e6cb;
+}
+
+.theme-ayu-dark .hljs-symbol,
+.theme-ayu-dark .hljs-bullet {
+  color: #f29668;
+}
