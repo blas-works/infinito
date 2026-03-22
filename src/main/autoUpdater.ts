@@ -1,30 +1,9 @@
 import { dialog, shell, BrowserWindow } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import { is } from '@electron-toolkit/utils'
-
-interface UpdatePriority {
-  priority: 'normal' | 'security' | 'critical'
-  message?: string
-  forceRestart?: boolean
-}
-
-interface UpdateInfo {
-  available: boolean
-  version?: string
-  priority?: 'normal' | 'security' | 'critical'
-  message?: string
-  progress?: number
-  downloaded?: boolean
-  manualDownload?: boolean
-}
-
-interface UpdateMetadata {
-  version: string
-  priority: 'normal' | 'security' | 'critical'
-  message?: string
-  forceRestart?: boolean
-  releaseDate?: string
-}
+import type Store from 'electron-store'
+import type { StoreSchema } from './index'
+import type { UpdateInfo, UpdateMetadata, UpdatePriority, PendingUpdate } from '../shared/types'
 
 const RELEASE_URL = 'https://github.com/torrescereno/infinito/releases/latest'
 const METADATA_URL =
@@ -40,16 +19,18 @@ const POLL_INTERVALS = {
 } as const
 
 let mainWindowRef: BrowserWindow | null = null
+let storeRef: Store<StoreSchema> | null = null
 let checkInterval: NodeJS.Timeout | null = null
 let snoozeTimeout: NodeJS.Timeout | null = null
-let lastPriority: UpdatePriority['priority'] = 'normal'
+let lastPriority: UpdatePriority = 'normal'
 let updateDownloaded = false
 let lastStatus: UpdateInfo = { available: false }
 
-export function setupAutoUpdater(mainWindow: BrowserWindow): void {
+export function setupAutoUpdater(mainWindow: BrowserWindow, store: Store<StoreSchema>): void {
   if (is.dev) return
 
   mainWindowRef = mainWindow
+  storeRef = store
 
   autoUpdater.autoDownload = false
   autoUpdater.autoInstallOnAppQuit = false
@@ -79,6 +60,13 @@ export function setupAutoUpdater(mainWindow: BrowserWindow): void {
   autoUpdater.on('update-downloaded', () => {
     updateDownloaded = true
 
+    const pending: PendingUpdate = {
+      version: lastStatus.version!,
+      priority: lastStatus.priority || 'normal',
+      message: lastStatus.message
+    }
+    storeRef?.set('pendingUpdate', pending)
+
     sendUpdateStatus({
       ...lastStatus,
       progress: 100,
@@ -90,6 +78,32 @@ export function setupAutoUpdater(mainWindow: BrowserWindow): void {
     console.error('Auto-updater error:', error.message)
     sendUpdateStatus({ available: false })
   })
+}
+
+export function checkPendingUpdate(): void {
+  if (is.dev || !storeRef) return
+
+  if (isMacOS) {
+    storeRef.delete('pendingUpdate')
+    return
+  }
+
+  const pending = storeRef.get('pendingUpdate')
+  if (!pending) return
+
+  lastPriority = pending.priority
+  updateDownloaded = true
+
+  lastStatus = {
+    available: true,
+    version: pending.version,
+    priority: pending.priority,
+    message: pending.message,
+    progress: 100,
+    downloaded: true
+  }
+
+  sendUpdateStatus(lastStatus)
 }
 
 async function handleUpdateAvailable(version: string): Promise<void> {
@@ -150,18 +164,24 @@ function showLinuxManualUpdateDialog(version: string): void {
     })
 }
 
-function showMacOSManualUpdateDialog(version: string, priority: UpdatePriority['priority']): void {
-  const titleMap: Record<string, string> = {
+function showMacOSManualUpdateDialog(version: string, priority: UpdatePriority): void {
+  const titleMap: Record<UpdatePriority, string> = {
     normal: 'Update available',
     security: 'Security update available',
     critical: 'Critical update available'
+  }
+
+  const noteMap: Record<UpdatePriority, string> = {
+    normal: '',
+    security: '\n\nThis is a security update. Please update as soon as possible.',
+    critical: '\n\nThis is a critical update. Please update immediately.'
   }
 
   dialog
     .showMessageBox({
       type: priority === 'critical' ? 'warning' : 'info',
       title: titleMap[priority],
-      message: `A new version (${version}) is available.`,
+      message: `A new version (${version}) is available.${noteMap[priority]}`,
       detail: 'Automatic updates are not available on macOS. Please download the update manually.',
       buttons: ['Download now', 'Remind later']
     })
@@ -176,6 +196,10 @@ function sendUpdateStatus(status: UpdateInfo): void {
   if (mainWindowRef && !mainWindowRef.isDestroyed()) {
     mainWindowRef.webContents.send('update-status', status)
   }
+}
+
+export function setMainWindow(window: BrowserWindow): void {
+  mainWindowRef = window
 }
 
 export function checkForUpdates(): void {
@@ -204,6 +228,13 @@ export function startPolling(): void {
   }, interval)
 }
 
+export function stopPolling(): void {
+  if (checkInterval) {
+    clearInterval(checkInterval)
+    checkInterval = null
+  }
+}
+
 export function getUpdateStatus(): UpdateInfo {
   return {
     ...lastStatus,
@@ -213,6 +244,7 @@ export function getUpdateStatus(): UpdateInfo {
 
 export function forceRestart(): void {
   if (updateDownloaded) {
+    storeRef?.set('pendingUpdate', null)
     autoUpdater.quitAndInstall()
   }
 }

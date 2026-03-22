@@ -1,7 +1,13 @@
 @import './base.css';
 
+html,
+body {
+  background: transparent !important;
+}
+
 #root {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background: transparent;
 }

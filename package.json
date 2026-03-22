@@ -1,10 +1,10 @@
 {
   "name": "infinito",
   "version": "1.1.5",
-  "description": "An Electron application with React and TypeScript",
+  "description": "An infinite canvas note-taking desktop app",
   "main": "./out/main/index.js",
-  "author": "example.com",
-  "homepage": "https://electron-vite.org",
+  "author": "torrescereno",
+  "homepage": "https://github.com/torrescereno/infinito",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",
@@ -37,6 +37,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.45.1",
+    "electron-store": "^8.2.0",
     "electron-updater": "^6.3.9",
     "lucide-react": "^0.577.0",
     "mermaid": "^11.13.0",

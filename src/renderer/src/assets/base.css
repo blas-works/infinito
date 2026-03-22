@@ -21,7 +21,7 @@
 
 body {
   min-height: 100vh;
-  background: #09090b;
+  background: transparent;
   color: #fafafa;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
