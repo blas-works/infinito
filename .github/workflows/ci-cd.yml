@@ -169,10 +169,13 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Build Windows
+      - name: Prepare migrations
         run: |
           Remove-Item -Recurse -Force resources/migrations -ErrorAction SilentlyContinue
           Copy-Item -Recurse src/database/migrations resources/migrations
+
+      - name: Build and publish Windows
+        run: |
           bun run build
           bunx electron-builder --win --publish always
         env:
@@ -198,10 +201,11 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Build macOS (${{ matrix.arch }})
+      - name: Prepare migrations
+        run: bun run build:migrations
+
+      - name: Build and publish macOS (${{ matrix.arch }})
         run: |
-          rm -rf resources/migrations
-          cp -r src/database/migrations resources/migrations
           bun run build
           bunx electron-builder --mac --${{ matrix.arch }} --publish always
         env:
@@ -223,10 +227,11 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Build Linux
+      - name: Prepare migrations
+        run: bun run build:migrations
+
+      - name: Build and publish Linux
         run: |
-          rm -rf resources/migrations
-          cp -r src/database/migrations resources/migrations
           bun run build
           bunx electron-builder --linux --publish always
         env:
