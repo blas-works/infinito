@@ -1,9 +1,11 @@
-import { Plus } from 'lucide-react'
+import { CalendarPlus, Plus } from 'lucide-react'
 import { motion } from 'motion/react'
 import { Button } from '@renderer/components/ui/button'
 import type { DateGroup as DateGroupType } from '@renderer/types'
+import { useNotesFilter } from '@renderer/hooks/useNotesFilter'
 import { BlockItem } from './BlockItem'
 import { DateGroup } from './DateGroup'
+import { NotesFilter } from './NotesFilter'
 
 interface NotesViewProps {
   groupedBlocks: DateGroupType[]
@@ -12,6 +14,7 @@ interface NotesViewProps {
   onFocus: (id: string | null) => void
   onUpdate: (id: string, content: string) => void
   onAddBlock: () => void
+  onAddDay: () => void
   onToggleCollapse: (id: string) => void
   isEmpty: boolean
 }
@@ -23,9 +26,12 @@ export function NotesView({
   onFocus,
   onUpdate,
   onAddBlock,
+  onAddDay,
   onToggleCollapse,
   isEmpty
 }: NotesViewProps): React.JSX.Element {
+  const { query, isActive, filteredGroups, setQuery } = useNotesFilter(groupedBlocks)
+
   return (
     <motion.div
       key="notes"
@@ -35,12 +41,18 @@ export function NotesView({
       transition={{ duration: 0.15, ease: 'easeOut' }}
       className="space-y-px"
     >
+      {!isEmpty && <NotesFilter query={query} onQueryChange={setQuery} />}
+
       {isEmpty ? (
         <p className="text-zinc-600 text-xs text-center py-12">
           No blocks yet. Add a block to start.
         </p>
+      ) : filteredGroups.length === 0 && isActive ? (
+        <p className="text-zinc-600 text-xs text-center py-12">
+          No matching notes found.
+        </p>
       ) : (
-        groupedBlocks.map((group) => {
+        filteredGroups.map((group) => {
           if (group.dateBlock) {
             return (
               <DateGroup
@@ -82,7 +94,7 @@ export function NotesView({
         })
       )}
 
-      <div className="pt-3 pl-5">
+      <div className="flex items-center gap-1 pt-3 pl-5">
         <Button
           variant="ghost"
           size="sm"
@@ -91,6 +103,15 @@ export function NotesView({
         >
           <Plus className="w-3 h-3 mr-1.5" />
           Add block
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onAddDay}
+          className="text-zinc-600 hover:text-zinc-400 h-7 px-2 text-[11px]"
+        >
+          <CalendarPlus className="w-3 h-3 mr-1.5" />
+          Today
         </Button>
       </div>
     </motion.div>

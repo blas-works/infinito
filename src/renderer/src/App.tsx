@@ -6,13 +6,12 @@ import { useBlocks, useSettings, useUpdate } from '@renderer/hooks'
 import { cn } from '@renderer/lib/utils'
 import { TitleBar } from '@renderer/components/layout'
 import { UpdateNotification } from '@renderer/components/UpdateNotification'
-import { IndexView } from '@renderer/sections/index'
 import { NotesView } from '@renderer/sections/notes'
 import { ConfigView } from '@renderer/sections/config'
 import { CanvasView } from '@renderer/sections/canvas'
 
 export default function App(): React.JSX.Element {
-  const [view, setView] = useState<View>('index')
+  const [view, setView] = useState<View>('notes')
   const [isPinned, setIsPinned] = useState(false)
   const [version, setVersion] = useState('0.0.0')
 
@@ -20,14 +19,12 @@ export default function App(): React.JSX.Element {
     blocks,
     focusedId,
     loaded,
-    dateBlocks,
     groupedBlocks,
     collapsedIds,
     setFocusedId,
     updateBlock,
     addBlock,
     addNewDay,
-    scrollToDate,
     toggleCollapse
   } = useBlocks()
 
@@ -46,10 +43,6 @@ export default function App(): React.JSX.Element {
     setIsPinned(pinned)
   }
 
-  const handleSelectDate = (id: string): void => {
-    setView('notes')
-    scrollToDate(id)
-  }
 
   if (!loaded) {
     return (
@@ -82,13 +75,7 @@ export default function App(): React.JSX.Element {
             <CanvasView />
           ) : (
             <div className="max-w-2xl mx-auto px-4 pt-5">
-              {view === 'index' ? (
-                <IndexView
-                  dateBlocks={dateBlocks}
-                  onSelectDate={handleSelectDate}
-                  onAddDay={addNewDay}
-                />
-              ) : view === 'config' ? (
+              {view === 'config' ? (
                 <ConfigView
                   settings={settings}
                   onFontSize={setFontSize}
@@ -106,6 +93,7 @@ export default function App(): React.JSX.Element {
                   onFocus={setFocusedId}
                   onUpdate={updateBlock}
                   onAddBlock={addBlock}
+                  onAddDay={addNewDay}
                   onToggleCollapse={toggleCollapse}
                   isEmpty={blocks.length === 0}
                 />
