@@ -12,13 +12,13 @@ import {
 
 describe('FONT_SIZES', () => {
   it('should have correct font sizes', () => {
-    expect(FONT_SIZES).toEqual([11, 12, 13, 14])
+    expect(FONT_SIZES).toEqual([11, 12, 13, 14, 15, 16, 17])
   })
 })
 
 describe('FONT_FAMILIES', () => {
-  it('should have 3 font families', () => {
-    expect(FONT_FAMILIES).toHaveLength(3)
+  it('should have 8 font families', () => {
+    expect(FONT_FAMILIES).toHaveLength(8)
   })
 
   it('should have correct structure', () => {
@@ -32,13 +32,13 @@ describe('FONT_FAMILIES', () => {
       label: 'JetBrains Mono',
       value: "'JetBrains Mono', monospace"
     })
-    expect(FONT_FAMILIES[2].id).toBe('system')
+    expect(FONT_FAMILIES[7].id).toBe('system')
   })
 })
 
 describe('CODE_THEMES', () => {
-  it('should have 6 themes', () => {
-    expect(CODE_THEMES).toHaveLength(6)
+  it('should have 12 themes', () => {
+    expect(CODE_THEMES).toHaveLength(12)
   })
 
   it('should have correct structure for each theme', () => {
@@ -64,7 +64,8 @@ describe('DEFAULT_SETTINGS', () => {
     expect(DEFAULT_SETTINGS).toEqual({
       fontSize: 12,
       fontFamily: 'inter',
-      codeTheme: 'zinc'
+      codeTheme: 'zinc',
+      ligatures: false
     })
   })
 
@@ -92,16 +93,25 @@ describe('Settings type', () => {
 
 describe('Type constraints', () => {
   it('should enforce FontSize values', () => {
-    const validSizes: FontSize[] = [11, 12, 13, 14]
+    const validSizes: FontSize[] = [11, 12, 13, 14, 15, 16, 17]
     validSizes.forEach((size) => {
-      expect([11, 12, 13, 14]).toContain(size)
+      expect(FONT_SIZES).toContain(size)
     })
   })
 
   it('should enforce FontFamily values', () => {
-    const validFamilies: FontFamily[] = ['inter', 'jetbrains', 'system']
+    const validFamilies: FontFamily[] = [
+      'inter',
+      'jetbrains',
+      'fira-code',
+      'source-code-pro',
+      'ibm-plex-mono',
+      'cascadia-code',
+      'geist-mono',
+      'system'
+    ]
     validFamilies.forEach((family) => {
-      expect(['inter', 'jetbrains', 'system']).toContain(family)
+      expect(FONT_FAMILIES.map((f) => f.id)).toContain(family)
     })
   })
 
@@ -112,12 +122,16 @@ describe('Type constraints', () => {
       'github-dark',
       'catppuccin',
       'nord',
-      'dracula'
+      'dracula',
+      'solarized-dark',
+      'gruvbox',
+      'one-dark',
+      'monokai',
+      'rose-pine',
+      'ayu-dark'
     ]
     validThemes.forEach((theme) => {
-      expect(['zinc', 'tokyo-night', 'github-dark', 'catppuccin', 'nord', 'dracula']).toContain(
-        theme
-      )
+      expect(CODE_THEMES.map((t) => t.id)).toContain(theme)
     })
   })
 })
