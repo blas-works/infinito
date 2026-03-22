@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { AnimatePresence } from 'motion/react'
 import type { View } from '@renderer/types'
 import { windowService } from '@renderer/services'
-import { useBlocks, useSettings } from '@renderer/hooks'
+import { useBlocks, useSettings, useUpdate } from '@renderer/hooks'
 import { cn } from '@renderer/lib/utils'
 import { TitleBar } from '@renderer/components/layout'
+import { UpdateNotification } from '@renderer/components/UpdateNotification'
 import { IndexView } from '@renderer/sections/index'
 import { NotesView } from '@renderer/sections/notes'
 import { ConfigView } from '@renderer/sections/config'
@@ -13,6 +14,7 @@ import { CanvasView } from '@renderer/sections/canvas'
 export default function App(): React.JSX.Element {
   const [view, setView] = useState<View>('index')
   const [isPinned, setIsPinned] = useState(false)
+  const [version, setVersion] = useState('0.0.0')
 
   const {
     blocks,
@@ -30,6 +32,14 @@ export default function App(): React.JSX.Element {
   } = useBlocks()
 
   const { settings, setFontSize, setFontFamily, setCodeTheme } = useSettings()
+  const { updateInfo, checkForUpdates, restartNow, snoozeUpdate, dismissUpdate } = useUpdate()
+
+  useEffect(() => {
+    window.api
+      ?.getVersion()
+      .then((v) => setVersion(v))
+      .catch(() => setVersion('0.0.0'))
+  }, [])
 
   const handleTogglePin = async (): Promise<void> => {
     const pinned = await windowService.togglePin()
@@ -47,7 +57,7 @@ export default function App(): React.JSX.Element {
 
   return (
     <div
-      className="flex flex-col h-screen bg-zinc-950 text-zinc-50 font-sans selection:bg-zinc-800"
+      className="relative flex flex-col h-screen bg-zinc-950 text-zinc-50 font-sans selection:bg-zinc-800"
       style={{ fontFamily: 'var(--app-font-family)' }}
     >
       <TitleBar
@@ -55,6 +65,13 @@ export default function App(): React.JSX.Element {
         isPinned={isPinned}
         onViewChange={setView}
         onTogglePin={handleTogglePin}
+      />
+
+      <UpdateNotification
+        updateInfo={updateInfo}
+        onRestart={restartNow}
+        onSnooze={snoozeUpdate}
+        onDismiss={dismissUpdate}
       />
 
       <main className={cn('flex-1', view === 'canvas' ? 'overflow-hidden' : 'overflow-y-auto')}>
@@ -75,6 +92,9 @@ export default function App(): React.JSX.Element {
                   onFontSize={setFontSize}
                   onFontFamily={setFontFamily}
                   onCodeTheme={setCodeTheme}
+                  onCheckUpdate={checkForUpdates}
+                  updateInfo={updateInfo}
+                  version={version}
                 />
               ) : (
                 <NotesView

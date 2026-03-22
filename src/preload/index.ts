@@ -10,7 +10,23 @@ const api = {
   getBlocks: (): Promise<{ id: string; content: string; position: number }[]> =>
     ipcRenderer.invoke('db:get-blocks'),
   saveBlocks: (blocks: { id: string; content: string }[]): Promise<void> =>
-    ipcRenderer.invoke('db:save-blocks', blocks)
+    ipcRenderer.invoke('db:save-blocks', blocks),
+  getVersion: (): Promise<string> => ipcRenderer.invoke('app:get-version'),
+  openExternal: (url: string): Promise<boolean> => ipcRenderer.invoke('app:open-external', url),
+  update: {
+    check: (): Promise<boolean> => ipcRenderer.invoke('update:check'),
+    getStatus: (): Promise<Record<string, unknown>> => ipcRenderer.invoke('update:get-status'),
+    restart: (): Promise<boolean> => ipcRenderer.invoke('update:restart'),
+    snooze: (): Promise<boolean> => ipcRenderer.invoke('update:snooze'),
+    onStatus: (callback: (_status: Record<string, unknown>) => void): (() => void) => {
+      const handler = (_event: Electron.IpcRendererEvent, status: Record<string, unknown>): void =>
+        callback(status)
+      ipcRenderer.on('update-status', handler)
+      return (): void => {
+        ipcRenderer.removeListener('update-status', handler)
+      }
+    }
+  }
 }
 
 if (process.contextIsolated) {

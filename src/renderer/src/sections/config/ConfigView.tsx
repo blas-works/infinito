@@ -1,7 +1,9 @@
-import { Check } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { Check, RefreshCw, Github } from 'lucide-react'
 import { motion } from 'motion/react'
 import { cn } from '@renderer/lib/utils'
-import type { FontSize, FontFamily, CodeTheme, Settings } from '@renderer/types'
+import { Button } from '@renderer/components/ui/button'
+import type { FontSize, FontFamily, CodeTheme, Settings, UpdateInfo } from '@renderer/types'
 import { FONT_SIZES, FONT_FAMILIES, CODE_THEMES } from '@renderer/types'
 
 interface ConfigViewProps {
@@ -9,14 +11,59 @@ interface ConfigViewProps {
   onFontSize: (size: FontSize) => void
   onFontFamily: (family: FontFamily) => void
   onCodeTheme: (theme: CodeTheme) => void
+  onCheckUpdate: () => void
+  updateInfo: UpdateInfo | null
+  version: string
 }
 
 export function ConfigView({
   settings,
   onFontSize,
   onFontFamily,
-  onCodeTheme
+  onCodeTheme,
+  onCheckUpdate,
+  updateInfo,
+  version
 }: ConfigViewProps): React.JSX.Element {
+  const [checking, setChecking] = useState(false)
+  const [upToDate, setUpToDate] = useState(false)
+  const updateInfoRef = useRef(updateInfo)
+
+  useEffect(() => {
+    updateInfoRef.current = updateInfo
+  })
+
+  const isUpdating = updateInfo?.available === true
+  const isDownloading = isUpdating && !updateInfo.downloaded && (updateInfo.progress ?? 0) < 100
+  const isReady = isUpdating && updateInfo.downloaded === true
+
+  const handleCheckUpdate = (): void => {
+    setChecking(true)
+    setUpToDate(false)
+    onCheckUpdate()
+
+    setTimeout(() => {
+      setChecking(false)
+      if (!updateInfoRef.current?.available) {
+        setUpToDate(true)
+        setTimeout(() => setUpToDate(false), 3000)
+      }
+    }, 4000)
+  }
+
+  const getUpdateLabel = (): string => {
+    if (isReady) return 'Update ready'
+    if (isDownloading) return `Downloading... ${updateInfo?.progress ?? 0}%`
+    if (isUpdating) return 'Updating...'
+    if (checking) return 'Checking...'
+    if (upToDate) return 'Up to date'
+    return 'Check for updates'
+  }
+
+  const handleGithubClick = (): void => {
+    window.api?.openExternal('https://github.com/torrescereno/infinito')
+  }
+
   return (
     <motion.div
       key="config"
@@ -24,7 +71,7 @@ export function ConfigView({
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 8 }}
       transition={{ duration: 0.15, ease: 'easeOut' }}
-      className="space-y-3"
+      className="flex flex-col gap-3 pb-6"
     >
       {/* Font Size */}
       <section>
@@ -105,6 +152,49 @@ export function ConfigView({
           ))}
         </div>
       </section>
+
+      {/* Check for updates */}
+      <div className="flex justify-center pt-2">
+        <button
+          onClick={handleCheckUpdate}
+          disabled={checking || isDownloading}
+          className={cn(
+            'inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-medium transition-colors',
+            'border border-zinc-800/50 hover:border-zinc-700',
+            upToDate ? 'text-green-400/70' : 'text-zinc-400 hover:text-zinc-300',
+            (checking || isDownloading) && 'opacity-60 cursor-not-allowed'
+          )}
+        >
+          {upToDate ? (
+            <Check size={12} strokeWidth={1.5} />
+          ) : (
+            <RefreshCw
+              size={12}
+              strokeWidth={1.5}
+              className={checking || isDownloading ? 'animate-spin' : ''}
+            />
+          )}
+          {getUpdateLabel()}
+        </button>
+      </div>
+
+      {/* Footer: GitHub + Version */}
+      <div className="mt-auto pt-4 border-t border-zinc-800/50">
+        <div className="flex items-center justify-between">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleGithubClick}
+            className="h-7 w-7 text-zinc-600 hover:text-zinc-300"
+            title="GitHub repository"
+          >
+            <Github size={14} strokeWidth={1.5} />
+          </Button>
+          <span className="text-[11px] text-zinc-600 font-light tracking-wide">
+            v{version || '0.0.0'}
+          </span>
+        </div>
+      </div>
     </motion.div>
   )
 }

@@ -3,6 +3,14 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { initDatabase, closeDatabase } from '../database/client'
 import { blockRepository } from '../database/repositories'
+import {
+  setupAutoUpdater,
+  startPolling,
+  checkForUpdates,
+  getUpdateStatus,
+  forceRestart,
+  snoozeCriticalRestart
+} from './autoUpdater'
 import icon from '../../resources/icon.png?asset'
 
 let mainWindow: BrowserWindow | null = null
@@ -10,7 +18,7 @@ let mainWindow: BrowserWindow | null = null
 function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 420,
-    height: 600,
+    height: 640,
     minWidth: 400,
     minHeight: 300,
     frame: false,
@@ -91,7 +99,40 @@ app.whenReady().then(() => {
     return mainWindow?.isMaximized() ?? false
   })
 
+  ipcMain.handle('app:get-version', () => {
+    return app.getVersion()
+  })
+
+  ipcMain.handle('app:open-external', (_event, url: string) => {
+    shell.openExternal(url)
+    return true
+  })
+
+  ipcMain.handle('update:check', () => {
+    checkForUpdates()
+    return true
+  })
+
+  ipcMain.handle('update:get-status', () => {
+    return getUpdateStatus()
+  })
+
+  ipcMain.handle('update:restart', () => {
+    forceRestart()
+    return true
+  })
+
+  ipcMain.handle('update:snooze', () => {
+    snoozeCriticalRestart()
+    return true
+  })
+
   createWindow()
+
+  if (mainWindow) {
+    setupAutoUpdater(mainWindow)
+    startPolling()
+  }
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
