@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { format } from 'date-fns'
 import type { Block, DateGroup } from '@renderer/types'
 import { blockService } from '@renderer/services'
@@ -27,38 +27,33 @@ export function useBlocks(): UseBlocksReturn {
   const [loaded, setLoaded] = useState(false)
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set())
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const initialCollapseApplied = useRef(false)
 
   useEffect(() => {
     blockService.getAll().then((rows) => {
       const mapped = rows.map((r) => ({ id: r.id, content: r.content }))
       const consolidated = consolidateBlocks(mapped)
       setBlocks(consolidated)
+
+      // Set initial collapse state: collapse all dates except today
+      const today = format(new Date(), 'dd-MM-yyyy')
+      const idsToCollapse = new Set<string>()
+
+      for (const block of consolidated) {
+        if (DATE_REGEX.test(block.content)) {
+          const dateStr = block.content.replace('# ', '').trim()
+          if (dateStr !== today) {
+            idsToCollapse.add(block.id)
+          }
+        }
+      }
+
+      if (idsToCollapse.size > 0) {
+        setCollapsedIds(idsToCollapse)
+      }
+
       setLoaded(true)
     })
   }, [])
-
-  // Set initial collapse state: collapse all dates except today
-  useEffect(() => {
-    if (!loaded || initialCollapseApplied.current || blocks.length === 0) return
-    initialCollapseApplied.current = true
-
-    const today = format(new Date(), 'dd-MM-yyyy')
-    const idsToCollapse = new Set<string>()
-
-    for (const block of blocks) {
-      if (DATE_REGEX.test(block.content)) {
-        const dateStr = block.content.replace('# ', '').trim()
-        if (dateStr !== today) {
-          idsToCollapse.add(block.id)
-        }
-      }
-    }
-
-    if (idsToCollapse.size > 0) {
-      setCollapsedIds(idsToCollapse)
-    }
-  }, [loaded, blocks])
 
   useEffect(() => {
     if (!loaded) return

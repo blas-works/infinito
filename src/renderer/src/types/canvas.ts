@@ -17,7 +17,7 @@ export const STROKE_PRESETS = [
   '#22c55e', // green-500
   '#3b82f6', // blue-500
   '#a855f7', // purple-500
-  '#ec4899'  // pink-500
+  '#ec4899' // pink-500
 ] as const
 
 export const FILL_PRESETS = [
@@ -28,7 +28,7 @@ export const FILL_PRESETS = [
   '#713f12', // yellow-900
   '#14532d', // green-900
   '#1e3a5f', // blue-900
-  '#581c87'  // purple-900
+  '#581c87' // purple-900
 ] as const
 
 // --- Element types (discriminated union by kind) ---
@@ -138,7 +138,8 @@ export function getElementBounds(element: CanvasElement): {
       if (txDenom !== 0) {
         const tx = (element.x1 - element.cx) / txDenom
         if (tx > 0 && tx < 1) {
-          const bx = (1 - tx) * (1 - tx) * element.x1 + 2 * (1 - tx) * tx * element.cx + tx * tx * element.x2
+          const bx =
+            (1 - tx) * (1 - tx) * element.x1 + 2 * (1 - tx) * tx * element.cx + tx * tx * element.x2
           xs.push(bx)
         }
       }
@@ -146,7 +147,8 @@ export function getElementBounds(element: CanvasElement): {
       if (tyDenom !== 0) {
         const ty = (element.y1 - element.cy) / tyDenom
         if (ty > 0 && ty < 1) {
-          const by = (1 - ty) * (1 - ty) * element.y1 + 2 * (1 - ty) * ty * element.cy + ty * ty * element.y2
+          const by =
+            (1 - ty) * (1 - ty) * element.y1 + 2 * (1 - ty) * ty * element.cy + ty * ty * element.y2
           ys.push(by)
         }
       }
@@ -158,5 +160,6 @@ export function getElementBounds(element: CanvasElement): {
     const maxY = Math.max(...ys)
     return { x: minX, y: minY, width: maxX - minX, height: maxY - minY }
   }
-  return { x: element.x, y: element.y, width: element.width, height: element.height }
+  const shaped = element as ShapeElement | TextElement
+  return { x: shaped.x, y: shaped.y, width: shaped.width, height: shaped.height }
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import type { CanvasElement, CanvasTool, LineStyle, Viewport } from '@renderer/types'
 
 const STORAGE_KEY = 'infinito-canvas'
@@ -47,9 +47,8 @@ export interface UseCanvasReturn {
 }
 
 export function useCanvas(): UseCanvasReturn {
-  const initial = useRef(loadState())
-  const [elements, setElements] = useState<CanvasElement[]>(initial.current.elements)
-  const [viewport, setViewport] = useState<Viewport>(initial.current.viewport)
+  const [elements, setElements] = useState<CanvasElement[]>(() => loadState().elements)
+  const [viewport, setViewport] = useState<Viewport>(() => loadState().viewport)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [tool, setTool] = useState<CanvasTool>('select')
   const [strokeColor, setStrokeColor] = useState('#f4f4f5')
@@ -70,7 +69,7 @@ export function useCanvas(): UseCanvasReturn {
 
   const updateElement = useCallback((id: string, patch: Partial<CanvasElement>) => {
     setElements((prev) =>
-      prev.map((el) => (el.id === id ? { ...el, ...patch } as CanvasElement : el))
+      prev.map((el) => (el.id === id ? ({ ...el, ...patch } as CanvasElement) : el))
     )
   }, [])
 

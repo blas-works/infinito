@@ -1,11 +1,6 @@
 export type { View, Block, BlockData, DateGroup } from './block'
 export type { FontSize, FontFamily, CodeTheme, CodeThemeOption, Settings } from './settings'
-export {
-  FONT_SIZES,
-  FONT_FAMILIES,
-  CODE_THEMES,
-  DEFAULT_SETTINGS
-} from './settings'
+export { FONT_SIZES, FONT_FAMILIES, CODE_THEMES, DEFAULT_SETTINGS } from './settings'
 export type {
   CanvasTool,
   LineStyle,

@@ -25,7 +25,8 @@ export default defineConfig({
         'drizzle.config.ts',
         'vitest.config.ts',
         'vitest.setup.ts',
-        '**/__tests__/**'
+        '**/__tests__/**',
+        'src/renderer/src/services/**'
       ],
       thresholds: {
         lines: 80,

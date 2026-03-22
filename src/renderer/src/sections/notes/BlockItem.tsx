@@ -31,9 +31,7 @@ export function BlockItem({
       if (/^\s*(?:[-*+]|\d+[.)])\s+\[[ xX]\]/.test(line)) {
         if (count === index) {
           count++
-          return line.includes('[ ]')
-            ? line.replace('[ ]', '[x]')
-            : line.replace(/\[[xX]\]/, '[ ]')
+          return line.includes('[ ]') ? line.replace('[ ]', '[x]') : line.replace(/\[[xX]\]/, '[ ]')
         }
         count++
       }

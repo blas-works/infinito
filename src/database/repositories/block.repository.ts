@@ -13,9 +13,7 @@ export const blockRepository = {
     db.transaction(() => {
       db.delete(blocks).run()
       for (let i = 0; i < items.length; i++) {
-        db.insert(blocks)
-          .values({ id: items[i].id, content: items[i].content, position: i })
-          .run()
+        db.insert(blocks).values({ id: items[i].id, content: items[i].content, position: i }).run()
       }
     })
   }

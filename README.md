@@ -1,70 +1,120 @@
-# infinito
+<div align="center">
+  <img src="build/icon.png" alt="Infinito Logo" width="120" height="120">
 
-A desktop application for organizing notes and drawing on an infinite canvas. Built with Electron, React, and TypeScript.
+  <h1>Infinito</h1>
+
+  <p><strong>A minimalist note-taking app with an infinite canvas</strong></p>
+
+  <p>
+    <em>Write. Draw. Think without limits.</em>
+  </p>
+
+  <p>
+    <a href="https://electronjs.org">
+      <img alt="Electron" src="https://img.shields.io/badge/Electron-39-9FEAF9?style=flat-square&logo=electron">
+    </a>
+    <a href="https://react.dev">
+      <img alt="React" src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react">
+    </a>
+    <a href="https://www.typescriptlang.org">
+      <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript">
+    </a>
+    <a href="https://bun.sh">
+      <img alt="Bun" src="https://img.shields.io/badge/Bun-1.3-000000?style=flat-square&logo=bun">
+    </a>
+    <a href="https://codecov.io/gh/torrescereno/infinito">
+      <img alt="Coverage" src="https://img.shields.io/codecov/c/github/torrescereno/infinito?style=flat-square&logo=codecov&label=coverage">
+    </a>
+  </p>
+
+  <p>
+    <a href="#features">Features</a> •
+    <a href="#installation">Installation</a> •
+    <a href="#development">Development</a>
+  </p>
+</div>
+
+---
 
 ## Features
 
-### Notes
+| **Notes**         | Create and organize blocks of content by date               |
+| :---------------- | :---------------------------------------------------------- |
+|                   | Markdown support with syntax highlighting                   |
+|                   | Code blocks with Mermaid diagram rendering                  |
+|                   | Collapsible date groups                                     |
+| **Canvas**        | Draw shapes: rectangles, circles, triangles                 |
+|                   | Lines and arrows with adjustable Bezier curves              |
+|                   | Text elements with configurable font size                   |
+|                   | Stroke and fill color presets, line styles (solid/dash/dot) |
+|                   | Pan and zoom navigation                                     |
+| **Settings**      | Configurable font size and font family                      |
+|                   | Code syntax theme selection                                 |
+| **Local Storage** | Private data stored locally, no internet required           |
+|                   | SQLite database with offline-first design                   |
 
-- Create and organize blocks of content organized by date
-- Markdown support with syntax highlighting
-- Code blocks with Mermaid diagram support
-- Collapsible date groups
+## Installation
 
-### Canvas
+### Downloads
 
-- Draw shapes: rectangles, circles, triangles
-- Lines and arrows with adjustable curves (Bézier)
-- Text elements with configurable font size
-- Stroke and fill color presets
-- Line styles: solid, dashed, dotted
-- Pan and zoom navigation
+Download the latest version from [GitHub Releases](https://github.com/torrescereno/infinito/releases/latest).
 
-### Settings
+| Platform    | Architecture  | Format                     |
+| ----------- | ------------- | -------------------------- |
+| **Windows** | x64           | `.exe` (NSIS)              |
+| **Linux**   | x64           | `.AppImage` `.snap` `.deb` |
+| **macOS**   | Apple Silicon | `.dmg`                     |
+| **macOS**   | Intel         | `.dmg`                     |
 
-- Configurable font size, font family
-- Code syntax theme selection
+#### macOS: First Run
 
-## Tech Stack
-
-- **Electron** + **electron-vite** - Desktop application framework
-- **React 19** + **TypeScript** - UI
-- **Tailwind CSS v4** - Styling
-- **Drizzle ORM** + **better-sqlite3** - Local database
-- **Motion** - Animations
-- **Mermaid** - Diagram rendering
-
-## Recommended IDE Setup
-
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
-
-## Project Setup
-
-### Install
+The app is not signed with Apple Developer. After installing, run in Terminal:
 
 ```bash
-$ npm install
+xattr -cr /Applications/Infinito.app
 ```
 
-### Development
+> **Note:** Automatic updates are not available on macOS (requires Apple Developer signature). Download new versions manually from [Releases](https://github.com/torrescereno/infinito/releases/latest).
+
+## Development
+
+### Prerequisites
+
+- **Node.js** >= 18.x
+- **Bun** >= 1.0
+
+### Quick Start
 
 ```bash
-$ npm run dev
+# Clone the repository
+git clone https://github.com/torrescereno/infinito.git
+cd infinito
+
+# Install dependencies
+bun install
+
+# Run in development mode
+bun run dev
 ```
 
-### Build
+<details>
+<summary><b>Development Scripts</b></summary>
 
-```bash
-# For windows
-$ npm run build:win
+| Command                 | Description                        |
+| ----------------------- | ---------------------------------- |
+| `bun run dev`           | Development server with hot reload |
+| `bun run build`         | Production build (auto-detects OS) |
+| `bun run build:win`     | Build for Windows (.exe)           |
+| `bun run build:mac`     | Build for macOS (.dmg)             |
+| `bun run build:linux`   | Build for Linux (.AppImage, .deb)  |
+| `bun run test`          | Run tests in watch mode            |
+| `bun run test:run`      | Run tests once                     |
+| `bun run test:coverage` | Run tests with coverage report     |
 
-# For macOS
-$ npm run build:mac
+</details>
 
-# For Linux
-$ npm run build:linux
-```
+---
 
-## Screenshots
-
-> TODO: Add screenshots here
+<div align="center">
+  <sub>Made with care by <a href="https://github.com/torrescereno">torrescereno</a></sub>
+</div>

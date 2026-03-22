@@ -132,7 +132,7 @@ describe('useCanvas', () => {
       result.current.updateElement('1', { width: 200 })
     })
 
-    expect(result.current.elements[0].width).toBe(200)
+    expect((result.current.elements[0] as ShapeElement).width).toBe(200)
   })
 
   it('should delete element', () => {

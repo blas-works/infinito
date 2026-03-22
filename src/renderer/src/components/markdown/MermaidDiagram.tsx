@@ -65,10 +65,5 @@ export function MermaidDiagram({ content }: MermaidDiagramProps): React.JSX.Elem
     )
   }
 
-  return (
-    <div
-      ref={containerRef}
-      className="flex justify-center my-2 [&_svg]:max-w-full"
-    />
-  )
+  return <div ref={containerRef} className="flex justify-center my-2 [&_svg]:max-w-full" />
 }

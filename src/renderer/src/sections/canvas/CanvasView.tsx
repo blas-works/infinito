@@ -40,35 +40,30 @@ export function CanvasView(): React.JSX.Element {
     }
   )
 
-  // Clear editing when selection changes, delete empty text
+  // Clear editing when selection changes, delete empty text + auto-edit new text
   useEffect(() => {
     if (editingId && !canvas.selectedIds.includes(editingId)) {
       const el = canvas.elements.find((e) => e.id === editingId)
       if (el?.kind === 'text' && !el.content.trim()) {
         canvas.deleteElement(editingId)
       }
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEditingId(null)
+      return
     }
-  }, [canvas.selectedIds])
 
-  // Auto-edit when creating a new text element
-  useEffect(() => {
     if (canvas.selectedIds.length === 1 && canvas.tool === 'text') {
       const el = canvas.elements.find((e) => e.id === canvas.selectedIds[0])
       if (el?.kind === 'text' && !el.content) {
         setEditingId(el.id)
       }
     }
-  }, [canvas.selectedIds])
+  }, [canvas, editingId])
 
   const handleDoubleClick = useCallback(
     (e: React.MouseEvent<SVGSVGElement>) => {
       const rect = e.currentTarget.getBoundingClientRect()
-      const world = screenToWorld(
-        e.clientX - rect.left,
-        e.clientY - rect.top,
-        canvas.viewport
-      )
+      const world = screenToWorld(e.clientX - rect.left, e.clientY - rect.top, canvas.viewport)
       for (let i = canvas.elements.length - 1; i >= 0; i--) {
         const el = canvas.elements[i]
         if (el.kind !== 'text') continue
@@ -86,7 +81,7 @@ export function CanvasView(): React.JSX.Element {
         }
       }
     },
-    [canvas.elements, canvas.viewport, canvas.setSelectedIds, editingId]
+    [canvas, editingId]
   )
 
   const handleEditEnd = useCallback(() => {
@@ -99,14 +94,14 @@ export function CanvasView(): React.JSX.Element {
       if (height && height > 0) patch.height = height
       canvas.updateElement(id, patch)
     },
-    [canvas.updateElement]
+    [canvas]
   )
 
   const handleDelete = useCallback(() => {
     if (canvas.selectedIds.length > 0) {
       canvas.deleteElements(canvas.selectedIds)
     }
-  }, [canvas.selectedIds, canvas.deleteElements])
+  }, [canvas])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent): void => {
@@ -142,7 +137,7 @@ export function CanvasView(): React.JSX.Element {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [handleDelete, canvas.setSelectedIds, canvas.setTool, canvas.elements])
+  }, [handleDelete, canvas])
 
   return (
     <motion.div

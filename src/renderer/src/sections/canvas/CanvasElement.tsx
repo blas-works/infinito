@@ -32,7 +32,6 @@ export function ArrowMarkerDef(): React.JSX.Element {
 
 export function CanvasElement({
   element,
-  isSelected,
   isEditing,
   onTextChange,
   onEditEnd
@@ -115,7 +114,14 @@ export function CanvasElement({
       )
 
     case 'text':
-      return <TextElement element={element} isEditing={isEditing} onTextChange={onTextChange} onEditEnd={onEditEnd} />
+      return (
+        <TextElement
+          element={element}
+          isEditing={isEditing}
+          onTextChange={onTextChange}
+          onEditEnd={onEditEnd}
+        />
+      )
   }
 }
 
@@ -126,7 +132,12 @@ interface TextElementProps {
   onEditEnd?: () => void
 }
 
-function TextElement({ element, isEditing, onTextChange, onEditEnd }: TextElementProps): React.JSX.Element {
+function TextElement({
+  element,
+  isEditing,
+  onTextChange,
+  onEditEnd
+}: TextElementProps): React.JSX.Element {
   const divRef = useRef<HTMLDivElement>(null)
   const wasEditing = useRef(false)
 
@@ -148,7 +159,7 @@ function TextElement({ element, isEditing, onTextChange, onEditEnd }: TextElemen
     if (!isEditing && wasEditing.current) {
       wasEditing.current = false
     }
-  }, [isEditing])
+  }, [isEditing, element.content])
 
   // Native keydown listener - React onKeyDown inside foreignObject is unreliable
   useEffect(() => {
@@ -205,7 +216,7 @@ function TextElement({ element, isEditing, onTextChange, onEditEnd }: TextElemen
           caretColor: element.stroke
         }}
       >
-        {isEditing ? null : (element.content || 'Text')}
+        {isEditing ? null : element.content || 'Text'}
       </div>
     </foreignObject>
   )

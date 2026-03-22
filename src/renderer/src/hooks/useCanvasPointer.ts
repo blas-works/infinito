@@ -4,7 +4,9 @@ import type {
   CanvasTool,
   LineStyle,
   Viewport,
-  PointerMode
+  PointerMode,
+  ShapeElement,
+  TextElement
 } from '@renderer/types'
 import { screenToWorld, getElementBounds, getControlPoint } from '@renderer/types'
 import { generateId } from '@renderer/lib/id'
@@ -82,9 +84,10 @@ function hitTest(
     const el = elements[i]
     if (el.kind === 'line' || el.kind === 'arrow') {
       const cp = getControlPoint(el)
-      const dist = (el.cx !== undefined && el.cy !== undefined)
-        ? distanceToBezier(worldX, worldY, el.x1, el.y1, cp.x, cp.y, el.x2, el.y2)
-        : distanceToSegment(worldX, worldY, el.x1, el.y1, el.x2, el.y2)
+      const dist =
+        el.cx !== undefined && el.cy !== undefined
+          ? distanceToBezier(worldX, worldY, el.x1, el.y1, cp.x, cp.y, el.x2, el.y2)
+          : distanceToSegment(worldX, worldY, el.x1, el.y1, el.x2, el.y2)
       if (dist <= threshold) return el
     } else {
       const bounds = getElementBounds(el)
@@ -171,11 +174,7 @@ function createLineElement(
   }
 }
 
-function createTextElement(
-  worldX: number,
-  worldY: number,
-  stroke: string
-): CanvasElement {
+function createTextElement(worldX: number, worldY: number, stroke: string): CanvasElement {
   return {
     id: generateId(),
     kind: 'text',
@@ -349,8 +348,10 @@ export function useCanvasPointer(
               if (!selectedIds.includes(el.id)) return el
               if (el.kind === 'line' || el.kind === 'arrow') {
                 const patch: Partial<typeof el> = {
-                  x1: el.x1 + dx, y1: el.y1 + dy,
-                  x2: el.x2 + dx, y2: el.y2 + dy
+                  x1: el.x1 + dx,
+                  y1: el.y1 + dy,
+                  x2: el.x2 + dx,
+                  y2: el.y2 + dy
                 }
                 if (el.cx !== undefined && el.cy !== undefined) {
                   patch.cx = el.cx + dx
@@ -358,7 +359,8 @@ export function useCanvasPointer(
                 }
                 return { ...el, ...patch }
               }
-              return { ...el, x: el.x + dx, y: el.y + dy } as CanvasElement
+              const shaped = el as ShapeElement | TextElement
+              return { ...shaped, x: shaped.x + dx, y: shaped.y + dy } as CanvasElement
             })
           )
         } else {
@@ -368,8 +370,10 @@ export function useCanvasPointer(
             const dx = newX - bounds.x
             const dy = newY - bounds.y
             const patch: Record<string, number> = {
-              x1: el.x1 + dx, y1: el.y1 + dy,
-              x2: el.x2 + dx, y2: el.y2 + dy
+              x1: el.x1 + dx,
+              y1: el.y1 + dy,
+              x2: el.x2 + dx,
+              y2: el.y2 + dy
             }
             if (el.cx !== undefined && el.cy !== undefined) {
               patch.cx = el.cx + dx

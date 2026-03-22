@@ -27,9 +27,7 @@ function applyToDOM(settings: Settings): void {
     root.style.setProperty('--app-font-family', font.value)
   }
 
-  document.body.className = document.body.className
-    .replace(/theme-[\w-]+/g, '')
-    .trim()
+  document.body.className = document.body.className.replace(/theme-[\w-]+/g, '').trim()
 
   if (settings.codeTheme !== 'zinc') {
     document.body.classList.add(`theme-${settings.codeTheme}`)

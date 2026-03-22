@@ -1,4 +1,9 @@
-import type { CanvasElement as CanvasElementType, Viewport, PointerMode, LineElement } from '@renderer/types'
+import type {
+  CanvasElement as CanvasElementType,
+  Viewport,
+  PointerMode,
+  LineElement
+} from '@renderer/types'
 import { CanvasElement, ArrowMarkerDef } from './CanvasElement'
 import { SelectionOverlay } from './SelectionOverlay'
 import { CurveHandle } from './CurveHandle'
@@ -35,12 +40,13 @@ export function CanvasSvg({
   onUpdateElement
 }: CanvasSvgProps): React.JSX.Element {
   // Collect selected line/arrow elements for curve handles
-  const selectedLineElements = selectedIds.length <= 4
-    ? elements.filter(
-        (el): el is LineElement =>
-          (el.kind === 'line' || el.kind === 'arrow') && selectedIds.includes(el.id)
-      )
-    : []
+  const selectedLineElements =
+    selectedIds.length <= 4
+      ? elements.filter(
+          (el): el is LineElement =>
+            (el.kind === 'line' || el.kind === 'arrow') && selectedIds.includes(el.id)
+        )
+      : []
 
   return (
     <svg

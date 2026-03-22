@@ -304,6 +304,31 @@ describe('getElementBounds', () => {
       expect(bounds.width).toBe(100)
       expect(bounds.height).toBeGreaterThan(0)
     })
+
+    it('should include Bezier extrema in bounds for both axes', () => {
+      // cx=100 pulls the curve far right, cy=100 pulls it far down
+      // txDenom = 0 - 200 + 50 = -150, tx = (0-100)/-150 = 0.667 (in range)
+      // tyDenom = 0 - 200 + 50 = -150, ty = (0-100)/-150 = 0.667 (in range)
+      const line: LineElement = {
+        id: '1',
+        kind: 'line',
+        x1: 0,
+        y1: 0,
+        x2: 50,
+        y2: 50,
+        cx: 100,
+        cy: 100,
+        stroke: '#fff',
+        fill: 'none',
+        strokeWidth: 1,
+        lineStyle: 'solid',
+        opacity: 1
+      }
+      const bounds = getElementBounds(line)
+      // The curve bulges beyond the endpoints
+      expect(bounds.width).toBeGreaterThan(50)
+      expect(bounds.height).toBeGreaterThan(50)
+    })
   })
 })
 
