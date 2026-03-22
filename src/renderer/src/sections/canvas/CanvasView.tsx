@@ -7,6 +7,14 @@ import type { AppState } from '@excalidraw/excalidraw/types'
 import { useCanvasSessions } from '@renderer/hooks'
 import { CanvasSessionBar } from './CanvasSessionBar'
 
+if (typeof window !== 'undefined' && !window.EXCALIDRAW_ASSET_PATH) {
+  if (import.meta.env.DEV) {
+    window.EXCALIDRAW_ASSET_PATH = '/'
+  } else {
+    window.EXCALIDRAW_ASSET_PATH = new URL('.', window.location.href).href
+  }
+}
+
 const CANVAS_PREFIX = 'infinito-canvas-'
 const DEBOUNCE_MS = 300
 const TRANSITION_MS = 150
