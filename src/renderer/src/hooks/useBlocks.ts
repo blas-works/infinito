@@ -19,6 +19,7 @@ interface UseBlocksReturn {
   addNewDay: () => void
   scrollToDate: (id: string) => void
   toggleCollapse: (id: string) => void
+  deleteGroup: (dateBlockId: string) => void
 }
 
 export function useBlocks(): UseBlocksReturn {
@@ -155,6 +156,27 @@ export function useBlocks(): UseBlocksReturn {
     [expandGroup]
   )
 
+  const deleteGroup = useCallback((dateBlockId: string) => {
+    setBlocks((prev) => {
+      const index = prev.findIndex((b) => b.id === dateBlockId)
+      if (index === -1) return prev
+
+      const idsToRemove = new Set<string>([dateBlockId])
+      const next = prev[index + 1]
+      if (next && !DATE_REGEX.test(next.content)) {
+        idsToRemove.add(next.id)
+      }
+
+      return prev.filter((b) => !idsToRemove.has(b.id))
+    })
+    setCollapsedIds((prev) => {
+      if (!prev.has(dateBlockId)) return prev
+      const next = new Set(prev)
+      next.delete(dateBlockId)
+      return next
+    })
+  }, [])
+
   const addBlock = useCallback(() => {
     const newBlock: Block = { id: generateId(), content: '' }
     setBlocks((prev) => [...prev, newBlock])
@@ -189,6 +211,7 @@ export function useBlocks(): UseBlocksReturn {
     addBlock,
     addNewDay,
     scrollToDate,
-    toggleCollapse
+    toggleCollapse,
+    deleteGroup
   }
 }

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { ChevronRight, ChevronDown } from 'lucide-react'
+import { ChevronRight, ChevronDown, Trash2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import type { Block } from '@renderer/types'
 import { useAutoResize } from '@renderer/hooks'
@@ -13,6 +13,7 @@ interface DateGroupProps {
   focusedId: string | null
   onFocus: (id: string | null) => void
   onUpdate: (id: string, content: string) => void
+  onDelete: (dateBlockId: string) => void
 }
 
 export function DateGroup({
@@ -22,7 +23,8 @@ export function DateGroup({
   onToggle,
   focusedId,
   onFocus,
-  onUpdate
+  onUpdate,
+  onDelete
 }: DateGroupProps): React.JSX.Element {
   const dateLabel = dateBlock.content.replace('# ', '').trim()
   const dateInputRef = useRef<HTMLTextAreaElement>(null)
@@ -45,7 +47,7 @@ export function DateGroup({
   }
 
   return (
-    <div className="mt-3">
+    <div className="mt-3 group/date">
       <div id={`block-${dateBlock.id}`} className="flex items-center">
         <button
           onClick={onToggle}
@@ -79,6 +81,14 @@ export function DateGroup({
             {dateLabel}
           </span>
         )}
+
+        <button
+          onClick={() => onDelete(dateBlock.id)}
+          className="opacity-0 group-hover/date:opacity-100 shrink-0 flex items-center justify-center w-5 h-5 rounded-sm text-zinc-600 hover:text-red-400 transition-all"
+          title="Delete note"
+        >
+          <Trash2 className="w-3 h-3" />
+        </button>
       </div>
 
       <AnimatePresence initial={false}>

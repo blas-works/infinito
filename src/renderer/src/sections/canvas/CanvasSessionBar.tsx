@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { Plus, X } from 'lucide-react'
 import { cn } from '@renderer/lib/utils'
 import type { CanvasSession } from '@renderer/types'
-import { ConfirmDialog } from './ConfirmDialog'
+import { ConfirmDialog } from '@renderer/components/ui/ConfirmDialog'
 
 interface CanvasSessionBarProps {
   sessions: CanvasSession[]

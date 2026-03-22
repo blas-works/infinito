@@ -1,6 +1,8 @@
+import { useState, useCallback } from 'react'
 import { CalendarPlus, Plus } from 'lucide-react'
 import { motion } from 'motion/react'
 import { Button } from '@renderer/components/ui/button'
+import { ConfirmDialog } from '@renderer/components/ui/ConfirmDialog'
 import type { DateGroup as DateGroupType } from '@renderer/types'
 import { useNotesFilter } from '@renderer/hooks/useNotesFilter'
 import { BlockItem } from './BlockItem'
@@ -16,6 +18,7 @@ interface NotesViewProps {
   onAddBlock: () => void
   onAddDay: () => void
   onToggleCollapse: (id: string) => void
+  onDeleteGroup: (dateBlockId: string) => void
   isEmpty: boolean
 }
 
@@ -28,9 +31,29 @@ export function NotesView({
   onAddBlock,
   onAddDay,
   onToggleCollapse,
+  onDeleteGroup,
   isEmpty
 }: NotesViewProps): React.JSX.Element {
   const { query, isActive, filteredGroups, setQuery } = useNotesFilter(groupedBlocks)
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+
+  const pendingDateLabel = pendingDeleteId
+    ? groupedBlocks
+        .find((g) => g.dateBlock?.id === pendingDeleteId)
+        ?.dateBlock?.content.replace('# ', '')
+        .trim()
+    : null
+
+  const handleConfirmDelete = useCallback(() => {
+    if (pendingDeleteId) {
+      onDeleteGroup(pendingDeleteId)
+      setPendingDeleteId(null)
+    }
+  }, [pendingDeleteId, onDeleteGroup])
+
+  const handleCancelDelete = useCallback(() => {
+    setPendingDeleteId(null)
+  }, [])
 
   return (
     <motion.div
@@ -64,6 +87,7 @@ export function NotesView({
                 focusedId={focusedId}
                 onFocus={onFocus}
                 onUpdate={onUpdate}
+                onDelete={(id) => setPendingDeleteId(id)}
               />
             )
           }
@@ -114,6 +138,13 @@ export function NotesView({
           Today
         </Button>
       </div>
+      <ConfirmDialog
+        open={pendingDeleteId !== null}
+        title={`Delete "${pendingDateLabel ?? ''}"?`}
+        description="This note and all its content will be permanently deleted."
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </motion.div>
   )
 }

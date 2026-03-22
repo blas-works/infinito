@@ -25,7 +25,8 @@ export default function App(): React.JSX.Element {
     updateBlock,
     addBlock,
     addNewDay,
-    toggleCollapse
+    toggleCollapse,
+    deleteGroup
   } = useBlocks()
 
   const { settings, setFontSize, setFontFamily, setCodeTheme, setLigatures } = useSettings()
@@ -96,6 +97,7 @@ export default function App(): React.JSX.Element {
                   onAddBlock={addBlock}
                   onAddDay={addNewDay}
                   onToggleCollapse={toggleCollapse}
+                  onDeleteGroup={deleteGroup}
                   isEmpty={blocks.length === 0}
                 />
               )}
