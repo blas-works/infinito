@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, nativeImage } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { initDatabase, closeDatabase } from '../database/client'
@@ -11,12 +11,22 @@ import {
   forceRestart,
   snoozeCriticalRestart
 } from './autoUpdater'
-import icon from '../../resources/icon.png?asset'
 
 let mainWindow: BrowserWindow | null = null
 
 function createWindow(): void {
+  const iconPath = is.dev
+    ? join(__dirname, '../../resources/icon.png')
+    : join(process.resourcesPath, 'icon.png')
+
+  const icon = nativeImage.createFromPath(iconPath)
+
+  if (process.platform === 'darwin' && !icon.isEmpty()) {
+    app.dock?.setIcon(iconPath)
+  }
+
   mainWindow = new BrowserWindow({
+    icon,
     width: 420,
     height: 640,
     minWidth: 400,
@@ -29,7 +39,6 @@ function createWindow(): void {
     show: false,
     autoHideMenuBar: true,
     resizable: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
