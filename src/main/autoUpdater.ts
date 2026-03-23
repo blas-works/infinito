@@ -34,7 +34,7 @@ export function setupAutoUpdater(mainWindow: BrowserWindow, store: Store<StoreSc
   storeRef = store
 
   autoUpdater.autoDownload = false
-  autoUpdater.autoInstallOnAppQuit = false
+  autoUpdater.autoInstallOnAppQuit = isWindows
 
   autoUpdater.on('update-available', (info) => {
     console.log('[AutoUpdater] Update available:', info.version)
