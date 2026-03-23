@@ -48,10 +48,11 @@ function getIconPath(): string {
 }
 
 function registerWindowKind(window: BrowserWindow, kind: WindowKind): void {
-  windowKinds.set(window.webContents.id, kind)
+  const webContentsId = window.webContents.id
+  windowKinds.set(webContentsId, kind)
 
   window.on('closed', () => {
-    windowKinds.delete(window.webContents.id)
+    windowKinds.delete(webContentsId)
 
     if (kind === 'main') {
       mainWindow = null
@@ -259,8 +260,13 @@ function setAppMode(mode: AppMode): AppMode {
 
   store.set('appMode', mode)
 
-  mainWindow?.webContents.send('app:mode-changed', mode)
-  menubarWindow?.webContents.send('app:mode-changed', mode)
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('app:mode-changed', mode)
+  }
+
+  if (menubarWindow && !menubarWindow.isDestroyed()) {
+    menubarWindow.webContents.send('app:mode-changed', mode)
+  }
 
   if (mode === 'menubar') {
     createTray()
