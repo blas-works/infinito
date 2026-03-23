@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/torrescereno/infinito/compare/v1.2.2...v1.3.0) (2026-03-23)
+
+
+### Features
+
+* selector de texto en tabs ([a5d6a36](https://github.com/torrescereno/infinito/commit/a5d6a36e63e0e0c7fb7c6ef05c7ae3bb5989ac8e))
+
 ## [1.2.2](https://github.com/torrescereno/infinito/compare/v1.2.1...v1.2.2) (2026-03-23)
 
 
