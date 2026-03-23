@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/torrescereno/infinito/compare/v1.2.0...v1.2.1) (2026-03-23)
+
+
+### Bug Fixes
+
+* actualizacion win y mac ([4c48d87](https://github.com/torrescereno/infinito/commit/4c48d87a7500ddcca121e51ce7137c977ed583c1))
+
 ## [1.2.0](https://github.com/torrescereno/infinito/compare/v1.1.7...v1.2.0) (2026-03-23)
 
 
