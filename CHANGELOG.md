@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.2](https://github.com/torrescereno/infinito/compare/v1.2.1...v1.2.2) (2026-03-23)
+
+
+### Bug Fixes
+
+* actualizacion en windows ([5f3b7ec](https://github.com/torrescereno/infinito/commit/5f3b7ec6a419c22b5e20a64b0653168af3fa61b0))
+* ci cd ([ba33af6](https://github.com/torrescereno/infinito/commit/ba33af67a7ea89b02e653257243f79416b5360f1))
+
 ## [1.2.1](https://github.com/torrescereno/infinito/compare/v1.2.0...v1.2.1) (2026-03-23)
 
 
