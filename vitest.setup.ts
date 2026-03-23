@@ -43,7 +43,22 @@ const apiMock = {
   closeWindow: vi.fn(),
   minimizeWindow: vi.fn(),
   maximizeWindow: vi.fn(() => Promise.resolve(false)),
-  isMaximized: vi.fn(() => Promise.resolve(false))
+  isMaximized: vi.fn(() => Promise.resolve(false)),
+  getVersion: vi.fn(() => Promise.resolve('0.0.0')),
+  getPlatform: vi.fn(() => Promise.resolve('darwin')),
+  getWindowKind: vi.fn(() => Promise.resolve('main')),
+  getAppMode: vi.fn(() => Promise.resolve('normal')),
+  setAppMode: vi.fn(() => Promise.resolve('normal')),
+  openNormalWindow: vi.fn(() => Promise.resolve(true)),
+  openExternal: vi.fn(() => Promise.resolve(true)),
+  update: {
+    check: vi.fn(() => Promise.resolve(true)),
+    getStatus: vi.fn(() => Promise.resolve({ available: false })),
+    restart: vi.fn(() => Promise.resolve(true)),
+    snooze: vi.fn(() => Promise.resolve(true)),
+    openDMG: vi.fn(() => Promise.resolve(true)),
+    onStatus: vi.fn(() => () => undefined)
+  }
 }
 
 Object.defineProperty(window, 'api', { value: apiMock })

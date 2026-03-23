@@ -8,10 +8,13 @@ import { FONT_SIZES, FONT_FAMILIES, CODE_THEMES } from '@renderer/types'
 
 interface ConfigViewProps {
   settings: Settings
+  isMacOS: boolean
+  appMode: 'normal' | 'menubar'
   onFontSize: (size: FontSize) => void
   onFontFamily: (family: FontFamily) => void
   onCodeTheme: (theme: CodeTheme) => void
   onLigatures: (enabled: boolean) => void
+  onAppMode: (mode: 'normal' | 'menubar') => void
   onCheckUpdate: () => void
   updateInfo: UpdateInfo | null
   version: string
@@ -19,10 +22,13 @@ interface ConfigViewProps {
 
 export function ConfigView({
   settings,
+  isMacOS,
+  appMode,
   onFontSize,
   onFontFamily,
   onCodeTheme,
   onLigatures,
+  onAppMode,
   onCheckUpdate,
   updateInfo,
   version
@@ -192,6 +198,45 @@ export function ConfigView({
           </div>
         </section>
       </div>
+
+      {isMacOS && (
+        <div className="rounded-xl bg-zinc-900/40 border border-zinc-800/30 p-4 space-y-3">
+          <h2 className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">
+            Window
+          </h2>
+
+          <section className="space-y-2">
+            <label className="text-[11px] text-zinc-400">Application Mode</label>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => onAppMode('normal')}
+                className={cn(
+                  'h-7 px-3 rounded-md text-[11px] font-mono transition-colors',
+                  appMode === 'normal'
+                    ? 'bg-zinc-700/60 text-zinc-200'
+                    : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50'
+                )}
+              >
+                Normal app
+              </button>
+              <button
+                onClick={() => onAppMode('menubar')}
+                className={cn(
+                  'h-7 px-3 rounded-md text-[11px] font-mono transition-colors',
+                  appMode === 'menubar'
+                    ? 'bg-zinc-700/60 text-zinc-200'
+                    : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50'
+                )}
+              >
+                Menu bar app
+              </button>
+            </div>
+            <p className="text-[10px] text-zinc-500">
+              Menu bar mode hides window on close and minimize.
+            </p>
+          </section>
+        </div>
+      )}
 
       {/* About */}
       <div className="rounded-xl bg-zinc-900/40 border border-zinc-800/30 p-4 space-y-4">

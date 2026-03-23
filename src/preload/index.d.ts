@@ -6,6 +6,9 @@ interface BlockData {
   position: number
 }
 
+type AppMode = 'normal' | 'menubar'
+type WindowKind = 'main' | 'menubar'
+
 interface UpdateStatusInfo {
   available: boolean
   version?: string
@@ -37,7 +40,14 @@ interface InfinitoAPI {
   getBlocks: () => Promise<BlockData[]>
   saveBlocks: (blocks: { id: string; content: string }[]) => Promise<void>
   getVersion: () => Promise<string>
+  getPlatform: () => Promise<NodeJS.Platform>
+  getWindowKind: () => Promise<WindowKind>
+  getAppMode: () => Promise<AppMode>
+  setAppMode: (mode: AppMode) => Promise<AppMode>
+  openNormalWindow: () => Promise<boolean>
   openExternal: (url: string) => Promise<boolean>
+  onShowNotes: (callback: () => void) => () => void
+  onAppModeChanged: (callback: (mode: AppMode) => void) => () => void
   update: UpdateAPI
 }
 
