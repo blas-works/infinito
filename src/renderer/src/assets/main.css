@@ -37,6 +37,17 @@ body {
   display: inline;
 }
 
+/* Session tab input selection highlight */
+.session-tab-input {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.session-tab-input::selection {
+  background-color: rgba(59, 130, 246, 0.5);
+  color: #fff;
+}
+
 /* Hide Excalidraw's built-in "Loading scene..." screen */
 .excalidraw .LoadingMessage,
 .excalidraw .LoadingMessage--dark {

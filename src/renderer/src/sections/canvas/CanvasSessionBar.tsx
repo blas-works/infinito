@@ -73,7 +73,7 @@ function SessionTab({
               setEditing(false)
             }
           }}
-          className="bg-transparent outline-none text-[11px] text-zinc-200 w-16 min-w-0"
+          className="bg-transparent outline-none text-[11px] text-zinc-200 w-16 min-w-0 select-text caret-zinc-200 session-tab-input"
           onClick={(e) => e.stopPropagation()}
         />
       ) : (
