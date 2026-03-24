@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { ChevronRight, ChevronDown, Trash2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
+import { cn } from '@renderer/lib/utils'
 import type { Block } from '@renderer/types'
 import { useAutoResize } from '@renderer/hooks'
 import { BlockItem } from './BlockItem'
@@ -11,6 +12,7 @@ interface DateGroupProps {
   isCollapsed: boolean
   onToggle: () => void
   focusedId: string | null
+  highlightedId?: string | null
   onFocus: (id: string | null) => void
   onUpdate: (id: string, content: string) => void
   onDelete: (dateBlockId: string) => void
@@ -22,6 +24,7 @@ export function DateGroup({
   isCollapsed,
   onToggle,
   focusedId,
+  highlightedId,
   onFocus,
   onUpdate,
   onDelete
@@ -48,7 +51,13 @@ export function DateGroup({
 
   return (
     <div className="mt-3 group/date">
-      <div id={`block-${dateBlock.id}`} className="flex items-center">
+      <div
+        id={`block-${dateBlock.id}`}
+        className={cn(
+          'flex items-center',
+          highlightedId === dateBlock.id && 'ring-1 ring-zinc-700 rounded'
+        )}
+      >
         <button
           onClick={onToggle}
           className="w-5 shrink-0 flex items-center justify-center text-zinc-600 hover:text-zinc-400 transition-colors"
@@ -100,7 +109,12 @@ export function DateGroup({
             transition={{ duration: 0.2, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="pl-5 pt-1">
+            <div
+              className={cn(
+                'pl-5 pt-1',
+                highlightedId === contentBlock.id && 'ring-1 ring-zinc-700 rounded'
+              )}
+            >
               <BlockItem
                 block={contentBlock}
                 isFocused={focusedId === contentBlock.id}

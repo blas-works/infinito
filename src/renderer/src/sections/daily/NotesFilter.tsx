@@ -14,6 +14,7 @@ export function NotesFilter({ query, onQueryChange }: NotesFilterProps): React.J
         value={query}
         onChange={(e) => onQueryChange(e.target.value)}
         placeholder="Search..."
+        data-vim-search
         className="w-full bg-transparent text-xs text-zinc-300 placeholder:text-zinc-700 outline-none"
       />
     </div>

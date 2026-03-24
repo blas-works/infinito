@@ -83,7 +83,8 @@ describe('Settings type', () => {
       fontSize: 14,
       fontFamily: 'jetbrains',
       codeTheme: 'tokyo-night',
-      ligatures: false
+      ligatures: false,
+      vimMode: false
     }
     expect(settings.fontSize).toBe(14)
     expect(settings.fontFamily).toBe('jetbrains')

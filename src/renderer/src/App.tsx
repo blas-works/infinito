@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { AnimatePresence } from 'motion/react'
 import type { View } from '@renderer/types'
 import { windowService } from '@renderer/services'
-import { useBlocks, useSettings, useUpdate } from '@renderer/hooks'
+import { useBlocks, useSettings, useUpdate, useVimMode } from '@renderer/hooks'
 import { cn } from '@renderer/lib/utils'
 import { TitleBar } from '@renderer/components/layout'
 import { UpdateNotification } from '@renderer/components/UpdateNotification'
@@ -35,8 +35,37 @@ export default function App(): React.JSX.Element {
     deleteGroup
   } = useBlocks()
 
-  const { settings, setFontSize, setFontFamily, setCodeTheme, setLigatures } = useSettings()
+  const { settings, setFontSize, setFontFamily, setCodeTheme, setLigatures, setVimMode } =
+    useSettings()
   const { updateInfo, checkForUpdates, restartNow, snoozeUpdate, dismissUpdate } = useUpdate()
+
+  const { highlightedId, vimLevel } = useVimMode({
+    enabled: settings.vimMode,
+    activeView,
+    setView,
+    groupedBlocks,
+    focusedId,
+    collapsedIds,
+    setFocusedId,
+    addBlock,
+    toggleCollapse
+  })
+
+  // Global Ctrl+P: go to daily search
+  useEffect(() => {
+    const handleGlobalSearch = (e: KeyboardEvent): void => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+        e.preventDefault()
+        setView('daily')
+        requestAnimationFrame(() => {
+          const filterInput = document.querySelector<HTMLInputElement>('[data-vim-search]')
+          filterInput?.focus()
+        })
+      }
+    }
+    document.addEventListener('keydown', handleGlobalSearch)
+    return () => document.removeEventListener('keydown', handleGlobalSearch)
+  }, [])
 
   useEffect(() => {
     window.api
@@ -128,6 +157,8 @@ export default function App(): React.JSX.Element {
         view={activeView}
         isMenubarWindow={isMenubarWindow}
         isPinned={isPinned}
+        vimMode={settings.vimMode}
+        vimLevel={vimLevel}
         onViewChange={setView}
         onTogglePin={handleTogglePin}
         onSwitchToNormalMode={handleSwitchToNormalMode}
@@ -169,6 +200,7 @@ export default function App(): React.JSX.Element {
                   onFontFamily={setFontFamily}
                   onCodeTheme={setCodeTheme}
                   onLigatures={setLigatures}
+                  onVimMode={setVimMode}
                   onAppMode={handleAppModeChange}
                   onCheckUpdate={checkForUpdates}
                   updateInfo={updateInfo}
@@ -179,6 +211,7 @@ export default function App(): React.JSX.Element {
                   groupedBlocks={groupedBlocks}
                   focusedId={focusedId}
                   collapsedIds={collapsedIds}
+                  highlightedId={highlightedId}
                   onFocus={setFocusedId}
                   onUpdate={updateBlock}
                   onAddBlock={addBlock}

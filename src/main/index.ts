@@ -300,7 +300,7 @@ function createMainWindow(showOnReady: boolean): void {
 
   mainWindow = new BrowserWindow({
     icon,
-    width: 420,
+    width: 450,
     height: 640,
     minWidth: 400,
     minHeight: 300,

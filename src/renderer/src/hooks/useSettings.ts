@@ -47,6 +47,7 @@ export function useSettings(): {
   setFontFamily: (family: FontFamily) => void
   setCodeTheme: (theme: CodeTheme) => void
   setLigatures: (ligatures: boolean) => void
+  setVimMode: (vimMode: boolean) => void
 } {
   const [settings, setSettings] = useState<Settings>(loadSettings)
 
@@ -71,5 +72,9 @@ export function useSettings(): {
     setSettings((prev) => ({ ...prev, ligatures }))
   }, [])
 
-  return { settings, setFontSize, setFontFamily, setCodeTheme, setLigatures }
+  const setVimMode = useCallback((vimMode: boolean) => {
+    setSettings((prev) => ({ ...prev, vimMode }))
+  }, [])
+
+  return { settings, setFontSize, setFontFamily, setCodeTheme, setLigatures, setVimMode }
 }

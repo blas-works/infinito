@@ -8,6 +8,8 @@ interface TitleBarProps {
   view: View
   isMenubarWindow: boolean
   isPinned: boolean
+  vimMode?: boolean
+  vimLevel?: 'tabs' | 'view'
   onViewChange: (view: View) => void
   onTogglePin: () => void
   onSwitchToNormalMode: () => void
@@ -18,6 +20,8 @@ export function TitleBar({
   view,
   isMenubarWindow,
   isPinned,
+  vimMode,
+  vimLevel,
   onViewChange,
   onTogglePin,
   onSwitchToNormalMode,
@@ -116,6 +120,15 @@ export function TitleBar({
           </>
         )}
       </div>
+
+      {vimMode && (
+        <span className={cn(
+          'text-[9px] font-mono uppercase tracking-wider',
+          vimLevel === 'view' ? 'text-zinc-400' : 'text-zinc-600'
+        )}>
+          {vimLevel === 'view' ? '-- INSERT --' : 'NORMAL'}
+        </span>
+      )}
 
       <div className="no-drag flex items-center gap-0.5">
         {!isMenubarWindow && (

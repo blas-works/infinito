@@ -19,7 +19,7 @@ export function NotesView(): React.JSX.Element {
     updateContent
   } = useNoteSessions()
 
-  const [mode, setMode] = useState<EditorMode>('edit')
+  const [mode, setMode] = useState<EditorMode>('preview')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
@@ -27,6 +27,12 @@ export function NotesView(): React.JSX.Element {
       textareaRef.current.focus()
     }
   }, [mode, activeSessionId])
+
+  useEffect(() => {
+    const handleEnterEdit = (): void => setMode('edit')
+    document.addEventListener('vim:enter-notes-edit', handleEnterEdit)
+    return () => document.removeEventListener('vim:enter-notes-edit', handleEnterEdit)
+  }, [])
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {

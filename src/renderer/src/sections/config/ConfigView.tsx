@@ -14,6 +14,7 @@ interface ConfigViewProps {
   onFontFamily: (family: FontFamily) => void
   onCodeTheme: (theme: CodeTheme) => void
   onLigatures: (enabled: boolean) => void
+  onVimMode: (enabled: boolean) => void
   onAppMode: (mode: 'normal' | 'menubar') => void
   onCheckUpdate: () => void
   updateInfo: UpdateInfo | null
@@ -28,6 +29,7 @@ export function ConfigView({
   onFontFamily,
   onCodeTheme,
   onLigatures,
+  onVimMode,
   onAppMode,
   onCheckUpdate,
   updateInfo,
@@ -196,6 +198,39 @@ export function ConfigView({
               </button>
             ))}
           </div>
+        </section>
+      </div>
+
+      {/* Keyboard */}
+      <div className="rounded-xl bg-zinc-900/40 border border-zinc-800/30 p-4 space-y-3">
+        <h2 className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">
+          Keyboard
+        </h2>
+
+        <section className="space-y-2">
+          <label className="text-[11px] text-zinc-400">Vim Mode</label>
+          <div className="flex items-center gap-1">
+            {(['Off', 'On'] as const).map((label) => {
+              const enabled = label === 'On'
+              return (
+                <button
+                  key={label}
+                  onClick={() => onVimMode(enabled)}
+                  className={cn(
+                    'h-7 px-3 rounded-md text-[11px] font-mono transition-colors',
+                    settings.vimMode === enabled
+                      ? 'bg-zinc-700/60 text-zinc-200'
+                      : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50'
+                  )}
+                >
+                  {label}
+                </button>
+              )
+            })}
+          </div>
+          <p className="text-[10px] text-zinc-500">
+            h/l or 1-4 switch tabs, i enters view, j/k navigates, Esc returns
+          </p>
         </section>
       </div>
 

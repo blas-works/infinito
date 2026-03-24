@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { CalendarPlus, Plus } from 'lucide-react'
 import { motion } from 'motion/react'
+import { cn } from '@renderer/lib/utils'
 import { Button } from '@renderer/components/ui/button'
 import { ConfirmDialog } from '@renderer/components/ui/ConfirmDialog'
 import type { DateGroup as DateGroupType } from '@renderer/types'
@@ -13,6 +14,7 @@ interface DailyViewProps {
   groupedBlocks: DateGroupType[]
   focusedId: string | null
   collapsedIds: Set<string>
+  highlightedId?: string | null
   onFocus: (id: string | null) => void
   onUpdate: (id: string, content: string) => void
   onAddBlock: () => void
@@ -26,6 +28,7 @@ export function DailyView({
   groupedBlocks,
   focusedId,
   collapsedIds,
+  highlightedId,
   onFocus,
   onUpdate,
   onAddBlock,
@@ -83,6 +86,7 @@ export function DailyView({
                 isCollapsed={collapsedIds.has(group.dateBlock.id)}
                 onToggle={() => onToggleCollapse(group.dateBlock!.id)}
                 focusedId={focusedId}
+                highlightedId={highlightedId}
                 onFocus={onFocus}
                 onUpdate={onUpdate}
                 onDelete={(id) => setPendingDeleteId(id)}
@@ -95,7 +99,10 @@ export function DailyView({
               <div
                 key={group.contentBlock.id}
                 id={`block-${group.contentBlock.id}`}
-                className="group relative flex items-start"
+                className={cn(
+                  'group relative flex items-start',
+                  highlightedId === group.contentBlock.id && 'ring-1 ring-zinc-700 rounded'
+                )}
               >
                 <div className="w-5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity pt-2">
                   <div className="w-1 h-1 rounded-full bg-zinc-800" />
