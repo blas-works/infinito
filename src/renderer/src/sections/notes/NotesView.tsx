@@ -69,6 +69,11 @@ export function NotesView(): React.JSX.Element {
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        setMode('preview')
+        return
+      }
       if (e.key === 'Tab') {
         e.preventDefault()
         const textarea = e.currentTarget
