@@ -1,16 +1,20 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Plus, X } from 'lucide-react'
+import { Plus, X, Pencil, Eye } from 'lucide-react'
 import { cn } from '@renderer/lib/utils'
-import type { CanvasSession } from '@renderer/types'
+import type { NoteSession } from '@renderer/types'
 import { ConfirmDialog } from '@renderer/components/ui/ConfirmDialog'
 
-interface CanvasSessionBarProps {
-  sessions: CanvasSession[]
+export type EditorMode = 'edit' | 'preview'
+
+interface NoteSessionBarProps {
+  sessions: NoteSession[]
   activeSessionId: string
+  mode: EditorMode
   onSelect: (id: string) => void
   onCreate: () => void
   onDelete: (id: string) => void
   onRename: (id: string, name: string) => void
+  onModeChange: (mode: EditorMode) => void
 }
 
 function SessionTab({
@@ -20,7 +24,7 @@ function SessionTab({
   onRequestDelete,
   onRename
 }: {
-  session: CanvasSession
+  session: NoteSession
   isActive: boolean
   onSelect: () => void
   onRequestDelete: () => void
@@ -102,14 +106,16 @@ function SessionTab({
   )
 }
 
-export function CanvasSessionBar({
+export function NoteSessionBar({
   sessions,
   activeSessionId,
+  mode,
   onSelect,
   onCreate,
   onDelete,
-  onRename
-}: CanvasSessionBarProps): React.JSX.Element {
+  onRename,
+  onModeChange
+}: NoteSessionBarProps): React.JSX.Element {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
 
   const pendingSession = pendingDeleteId ? sessions.find((s) => s.id === pendingDeleteId) : null
@@ -144,15 +150,39 @@ export function CanvasSessionBar({
           type="button"
           onClick={onCreate}
           className="flex items-center justify-center h-5 w-5 shrink-0 rounded-sm text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800 transition-colors ml-1"
-          title="New canvas"
+          title="New note"
         >
           <Plus className="w-3 h-3" />
         </button>
+        <div className="flex items-center gap-0.5 ml-2 shrink-0 bg-zinc-900/50 p-0.5 rounded">
+          <button
+            type="button"
+            onClick={() => onModeChange('edit')}
+            className={cn(
+              'flex items-center gap-1 h-5 px-1.5 text-[10px] font-medium rounded-sm transition-colors',
+              mode === 'edit' ? 'bg-zinc-800 text-zinc-200' : 'text-zinc-500 hover:text-zinc-300'
+            )}
+          >
+            <Pencil className="w-2.5 h-2.5" />
+            Edit
+          </button>
+          <button
+            type="button"
+            onClick={() => onModeChange('preview')}
+            className={cn(
+              'flex items-center gap-1 h-5 px-1.5 text-[10px] font-medium rounded-sm transition-colors',
+              mode === 'preview' ? 'bg-zinc-800 text-zinc-200' : 'text-zinc-500 hover:text-zinc-300'
+            )}
+          >
+            <Eye className="w-2.5 h-2.5" />
+            Preview
+          </button>
+        </div>
       </div>
       <ConfirmDialog
         open={pendingDeleteId !== null}
         title={`Delete "${pendingSession?.name ?? ''}"?`}
-        description="This canvas and all its content will be permanently deleted."
+        description="This note and all its content will be permanently deleted."
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
       />

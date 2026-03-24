@@ -6,19 +6,20 @@ import { useBlocks, useSettings, useUpdate } from '@renderer/hooks'
 import { cn } from '@renderer/lib/utils'
 import { TitleBar } from '@renderer/components/layout'
 import { UpdateNotification } from '@renderer/components/UpdateNotification'
+import { DailyView } from '@renderer/sections/daily'
 import { NotesView } from '@renderer/sections/notes'
 import { ConfigView } from '@renderer/sections/config'
 import { CanvasView } from '@renderer/sections/canvas'
 
 export default function App(): React.JSX.Element {
-  const [view, setView] = useState<View>('notes')
+  const [view, setView] = useState<View>('daily')
   const [isPinned, setIsPinned] = useState(false)
   const [version, setVersion] = useState('0.0.0')
   const [isMacOS, setIsMacOS] = useState(false)
   const [windowKind, setWindowKind] = useState<'main' | 'menubar'>('main')
   const [appMode, setAppMode] = useState<'normal' | 'menubar'>('normal')
   const isMenubarWindow = windowKind === 'menubar'
-  const activeView: View = isMenubarWindow ? 'notes' : view
+  const activeView: View = isMenubarWindow ? 'daily' : view
 
   const {
     blocks,
@@ -68,19 +69,19 @@ export default function App(): React.JSX.Element {
       .then((kind) => {
         setWindowKind(kind)
         if (kind === 'menubar') {
-          setView('notes')
+          setView('daily')
         }
       })
       .catch(() => setWindowKind('main'))
 
     const unsubscribeShowNotes = window.api.onShowNotes(() => {
-      setView('notes')
+      setView('daily')
     })
 
     const unsubscribeAppModeChanged = window.api.onAppModeChanged((mode) => {
       setAppMode(mode)
       if (mode === 'menubar') {
-        setView('notes')
+        setView('daily')
       }
     })
 
@@ -147,12 +148,16 @@ export default function App(): React.JSX.Element {
       <main
         className={cn(
           'flex-1',
-          !isMenubarWindow && activeView === 'canvas' ? 'overflow-hidden' : 'overflow-y-auto'
+          !isMenubarWindow && (activeView === 'canvas' || activeView === 'notes')
+            ? 'overflow-hidden'
+            : 'overflow-y-auto'
         )}
       >
         <AnimatePresence mode="wait">
           {!isMenubarWindow && activeView === 'canvas' ? (
             <CanvasView />
+          ) : !isMenubarWindow && activeView === 'notes' ? (
+            <NotesView />
           ) : (
             <div className="max-w-2xl mx-auto px-4 pt-5">
               {!isMenubarWindow && activeView === 'config' ? (
@@ -170,7 +175,7 @@ export default function App(): React.JSX.Element {
                   version={version}
                 />
               ) : (
-                <NotesView
+                <DailyView
                   groupedBlocks={groupedBlocks}
                   focusedId={focusedId}
                   collapsedIds={collapsedIds}

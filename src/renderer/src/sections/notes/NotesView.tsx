@@ -1,148 +1,164 @@
-import { useState, useCallback } from 'react'
-import { CalendarPlus, Plus } from 'lucide-react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion } from 'motion/react'
-import { Button } from '@renderer/components/ui/button'
-import { ConfirmDialog } from '@renderer/components/ui/ConfirmDialog'
-import type { DateGroup as DateGroupType } from '@renderer/types'
-import { useNotesFilter } from '@renderer/hooks/useNotesFilter'
-import { BlockItem } from './BlockItem'
-import { DateGroup } from './DateGroup'
-import { NotesFilter } from './NotesFilter'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import rehypeHighlight from 'rehype-highlight'
+import { useNoteSessions } from '@renderer/hooks'
+import { CodeBlock } from '@renderer/components/markdown'
+import { NoteSessionBar, type EditorMode } from './NoteSessionBar'
 
-interface NotesViewProps {
-  groupedBlocks: DateGroupType[]
-  focusedId: string | null
-  collapsedIds: Set<string>
-  onFocus: (id: string | null) => void
-  onUpdate: (id: string, content: string) => void
-  onAddBlock: () => void
-  onAddDay: () => void
-  onToggleCollapse: (id: string) => void
-  onDeleteGroup: (dateBlockId: string) => void
-  isEmpty: boolean
-}
+export function NotesView(): React.JSX.Element {
+  const {
+    sessions,
+    activeSessionId,
+    activeContent,
+    setActiveSession,
+    createSession,
+    deleteSession,
+    renameSession,
+    updateContent
+  } = useNoteSessions()
 
-export function NotesView({
-  groupedBlocks,
-  focusedId,
-  collapsedIds,
-  onFocus,
-  onUpdate,
-  onAddBlock,
-  onAddDay,
-  onToggleCollapse,
-  onDeleteGroup,
-  isEmpty
-}: NotesViewProps): React.JSX.Element {
-  const { query, isActive, filteredGroups, setQuery } = useNotesFilter(groupedBlocks)
-  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+  const [mode, setMode] = useState<EditorMode>('edit')
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const pendingDateLabel = pendingDeleteId
-    ? groupedBlocks
-        .find((g) => g.dateBlock?.id === pendingDeleteId)
-        ?.dateBlock?.content.replace('# ', '')
-        .trim()
-    : null
-
-  const handleConfirmDelete = useCallback(() => {
-    if (pendingDeleteId) {
-      onDeleteGroup(pendingDeleteId)
-      setPendingDeleteId(null)
+  useEffect(() => {
+    if (mode === 'edit' && textareaRef.current) {
+      textareaRef.current.focus()
     }
-  }, [pendingDeleteId, onDeleteGroup])
+  }, [mode, activeSessionId])
 
-  const handleCancelDelete = useCallback(() => {
-    setPendingDeleteId(null)
-  }, [])
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      updateContent(e.target.value)
+    },
+    [updateContent]
+  )
+
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+      const items = e.clipboardData.items
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          e.preventDefault()
+          const file = items[i].getAsFile()
+          if (file) {
+            const reader = new FileReader()
+            reader.onload = (event) => {
+              const base64 = event.target?.result as string
+              const insertion = `![image](${base64})`
+              const textarea = textareaRef.current
+              if (textarea) {
+                const start = textarea.selectionStart
+                const end = textarea.selectionEnd
+                const before = activeContent.slice(0, start)
+                const after = activeContent.slice(end)
+                updateContent(before + insertion + after)
+              } else {
+                updateContent(activeContent + (activeContent ? '\n' : '') + insertion)
+              }
+            }
+            reader.readAsDataURL(file)
+          }
+          break
+        }
+      }
+    },
+    [activeContent, updateContent]
+  )
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Tab') {
+        e.preventDefault()
+        const textarea = e.currentTarget
+        const start = textarea.selectionStart
+        const end = textarea.selectionEnd
+        const before = activeContent.slice(0, start)
+        const after = activeContent.slice(end)
+        updateContent(before + '  ' + after)
+        requestAnimationFrame(() => {
+          textarea.selectionStart = start + 2
+          textarea.selectionEnd = start + 2
+        })
+      }
+    },
+    [activeContent, updateContent]
+  )
 
   return (
     <motion.div
       key="notes"
-      initial={{ opacity: 0, x: 8 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 8 }}
-      transition={{ duration: 0.15, ease: 'easeOut' }}
-      className="space-y-px"
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -4 }}
+      transition={{ duration: 0.15 }}
+      className="relative flex flex-col h-full"
     >
-      {!isEmpty && <NotesFilter query={query} onQueryChange={setQuery} />}
-
-      {isEmpty ? (
-        <p className="text-zinc-600 text-xs text-center py-12">
-          No blocks yet. Add a block to start.
-        </p>
-      ) : filteredGroups.length === 0 && isActive ? (
-        <p className="text-zinc-600 text-xs text-center py-12">No matching notes found.</p>
-      ) : (
-        filteredGroups.map((group) => {
-          if (group.dateBlock) {
-            return (
-              <DateGroup
-                key={group.dateBlock.id}
-                dateBlock={group.dateBlock}
-                contentBlock={group.contentBlock}
-                isCollapsed={collapsedIds.has(group.dateBlock.id)}
-                onToggle={() => onToggleCollapse(group.dateBlock!.id)}
-                focusedId={focusedId}
-                onFocus={onFocus}
-                onUpdate={onUpdate}
-                onDelete={(id) => setPendingDeleteId(id)}
-              />
-            )
-          }
-
-          if (group.contentBlock) {
-            return (
-              <div
-                key={group.contentBlock.id}
-                id={`block-${group.contentBlock.id}`}
-                className="group relative flex items-start"
-              >
-                <div className="w-5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity pt-2">
-                  <div className="w-1 h-1 rounded-full bg-zinc-800" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <BlockItem
-                    block={group.contentBlock}
-                    isFocused={focusedId === group.contentBlock.id}
-                    onFocus={onFocus}
-                    onChange={(content) => onUpdate(group.contentBlock!.id, content)}
-                  />
-                </div>
-              </div>
-            )
-          }
-
-          return null
-        })
-      )}
-
-      <div className="flex items-center gap-1 pt-3 pl-5">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onAddBlock}
-          className="text-zinc-600 hover:text-zinc-400 h-7 px-2 text-[11px]"
-        >
-          <Plus className="w-3 h-3 mr-1.5" />
-          Add block
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onAddDay}
-          className="text-zinc-600 hover:text-zinc-400 h-7 px-2 text-[11px]"
-        >
-          <CalendarPlus className="w-3 h-3 mr-1.5" />
-          Today
-        </Button>
-      </div>
-      <ConfirmDialog
-        open={pendingDeleteId !== null}
-        title={`Delete "${pendingDateLabel ?? ''}"?`}
-        description="This note and all its content will be permanently deleted."
-        onConfirm={handleConfirmDelete}
-        onCancel={handleCancelDelete}
+      <NoteSessionBar
+        sessions={sessions}
+        activeSessionId={activeSessionId}
+        mode={mode}
+        onSelect={setActiveSession}
+        onCreate={createSession}
+        onDelete={deleteSession}
+        onRename={renameSession}
+        onModeChange={setMode}
       />
+
+      <div className="flex-1 overflow-y-auto">
+        {mode === 'edit' ? (
+          <textarea
+            ref={textareaRef}
+            key={activeSessionId}
+            value={activeContent}
+            onChange={handleChange}
+            onPaste={handlePaste}
+            onKeyDown={handleKeyDown}
+            className="w-full h-full bg-transparent outline-none resize-none text-zinc-300 font-mono leading-relaxed p-4 placeholder:text-zinc-700"
+            style={{ fontSize: 'var(--app-font-size)', minHeight: '100%' }}
+            placeholder="Start writing..."
+            spellCheck={false}
+          />
+        ) : (
+          <div className="max-w-2xl mx-auto p-4">
+            {activeContent ? (
+              <div
+                className="prose prose-invert prose-zinc max-w-none
+                  prose-p:my-1 prose-p:leading-relaxed
+                  prose-headings:mt-4 prose-headings:mb-2 prose-headings:font-semibold prose-headings:text-zinc-200
+                  prose-h1:text-lg prose-h2:text-base prose-h3:text-sm
+                  prose-ul:my-1 prose-ol:my-1 prose-li:my-0
+                  prose-a:text-zinc-400 hover:prose-a:text-zinc-200 prose-a:underline prose-a:underline-offset-2
+                  prose-code:text-zinc-400 prose-code:bg-zinc-900 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:border-0
+                  prose-pre:bg-zinc-900 prose-pre:p-0 prose-pre:rounded-lg prose-pre:overflow-hidden prose-pre:border prose-pre:border-zinc-800/40
+                  prose-blockquote:border-zinc-700 prose-blockquote:text-zinc-400
+                  prose-hr:border-zinc-800
+                  prose-img:rounded-md prose-img:max-h-64
+                  prose-th:text-zinc-300 prose-th:border-zinc-700 prose-th:py-1.5 prose-th:px-2
+                  prose-td:border-zinc-800 prose-td:py-1.5 prose-td:px-2
+                  text-zinc-300 [&_input[type=checkbox]]:accent-zinc-500
+                  [&_.contains-task-list]:list-none [&_.contains-task-list]:pl-1"
+                style={{ fontSize: 'var(--app-font-size)' }}
+              >
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeHighlight]}
+                  components={{
+                    code: CodeBlock
+                  }}
+                >
+                  {activeContent}
+                </ReactMarkdown>
+              </div>
+            ) : (
+              <p className="text-zinc-600 text-xs text-center py-12">
+                Nothing to preview. Switch to edit mode to start writing.
+              </p>
+            )}
+          </div>
+        )}
+      </div>
     </motion.div>
   )
 }
