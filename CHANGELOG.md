@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.5.0](https://github.com/torrescereno/infinito/compare/v1.4.1...v1.5.0) (2026-03-24)
+
+
+### Features
+
+* add functionality to insert a new day block with an empty content block ([4f49f6c](https://github.com/torrescereno/infinito/commit/4f49f6c19b32503fe720e253caefcc5c6861df12))
+* insercion de bloques al inicio en lugar de al final ([98c5edf](https://github.com/torrescereno/infinito/commit/98c5edfb303a644eb919d1d33c799d762cd2e3f7))
+* insert new day block at the top of the blocks list ([6b8d924](https://github.com/torrescereno/infinito/commit/6b8d9244e74ab021b5ce224e7b5556b9fc0d1d08))
+* se agrega vista de notas y daily ([32a1e2e](https://github.com/torrescereno/infinito/commit/32a1e2ee60618db47d01f1419018a7a4f0f83fb1))
+
+
+### Bug Fixes
+
+* lint ([b2e8cad](https://github.com/torrescereno/infinito/commit/b2e8cad047fc36cdb7501e1bcd178f72ac7045cf))
+* se corrigen test ([f644109](https://github.com/torrescereno/infinito/commit/f64410983b767d19c4991d4910b19402f7755314))
+
 ## [1.4.1](https://github.com/torrescereno/infinito/compare/v1.4.0...v1.4.1) (2026-03-24)
 
 
