@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/torrescereno/infinito/compare/v1.4.0...v1.4.1) (2026-03-24)
+
+
+### Bug Fixes
+
+* instalacion linux ([e088162](https://github.com/torrescereno/infinito/commit/e088162ad7de5c0338b7b58995c07e2713b9e7fc))
+
 ## [1.4.0](https://github.com/torrescereno/infinito/compare/v1.3.0...v1.4.0) (2026-03-23)
 
 
