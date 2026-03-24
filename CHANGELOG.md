@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.6.0](https://github.com/torrescereno/infinito/compare/v1.5.0...v1.6.0) (2026-03-24)
+
+
+### Features
+
+* agregar atajo de teclado Escape para cambiar a modo preview en notas ([b85d87b](https://github.com/torrescereno/infinito/commit/b85d87bb44655cf82d505d2f43cc66e672e9b4b2))
+* se agrega modo vim ([21223f5](https://github.com/torrescereno/infinito/commit/21223f5a594b38b462c61fb3d19b4cecb130084f))
+
+
+### Bug Fixes
+
+* liter y test ([68570bb](https://github.com/torrescereno/infinito/commit/68570bb85c9dc82d9097cc419cbb3856cd45c532))
+
 ## [1.5.0](https://github.com/torrescereno/infinito/compare/v1.4.1...v1.5.0) (2026-03-24)
 
 
