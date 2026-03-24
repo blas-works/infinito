@@ -192,7 +192,7 @@ export function useBlocks(): UseBlocksReturn {
       return
     }
     const dateBlock: Block = { id: generateId(), content: `# ${today}` }
-    setBlocks((prev) => [...prev, dateBlock])
+    setBlocks((prev) => [dateBlock, ...prev])
     setTimeout(() => {
       const el = document.getElementById(`block-${dateBlock.id}`)
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })

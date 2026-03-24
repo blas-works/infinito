@@ -239,6 +239,28 @@ describe('useBlocks', () => {
       expect(result.current.blocks[0].content).toBe('# 21-03-2026')
     })
 
+    it('should insert new day block at top', async () => {
+      vi.mocked(window.api.getBlocks).mockResolvedValue([
+        { id: 'date-old', content: '# 20-03-2026', position: 0 },
+        { id: 'content-old', content: 'old content', position: 1 }
+      ])
+
+      const { result } = renderHook(() => useBlocks())
+
+      await waitFor(() => {
+        expect(result.current.loaded).toBe(true)
+      })
+
+      act(() => {
+        result.current.addNewDay()
+      })
+
+      expect(result.current.blocks).toHaveLength(3)
+      expect(result.current.blocks[0].content).toBe('# 21-03-2026')
+      expect(result.current.blocks[1].id).toBe('date-old')
+      expect(result.current.blocks[2].id).toBe('content-old')
+    })
+
     it('should not duplicate todays date block', async () => {
       vi.mocked(window.api.getBlocks).mockResolvedValue([
         { id: 'existing-date', content: '# 21-03-2026', position: 0 }
