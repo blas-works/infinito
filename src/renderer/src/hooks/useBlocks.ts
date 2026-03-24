@@ -179,7 +179,7 @@ export function useBlocks(): UseBlocksReturn {
 
   const addBlock = useCallback(() => {
     const newBlock: Block = { id: generateId(), content: '' }
-    setBlocks((prev) => [...prev, newBlock])
+    setBlocks((prev) => [newBlock, ...prev])
     setFocusedId(newBlock.id)
   }, [])
 

@@ -14,6 +14,11 @@ export default function App(): React.JSX.Element {
   const [view, setView] = useState<View>('notes')
   const [isPinned, setIsPinned] = useState(false)
   const [version, setVersion] = useState('0.0.0')
+  const [isMacOS, setIsMacOS] = useState(false)
+  const [windowKind, setWindowKind] = useState<'main' | 'menubar'>('main')
+  const [appMode, setAppMode] = useState<'normal' | 'menubar'>('normal')
+  const isMenubarWindow = windowKind === 'menubar'
+  const activeView: View = isMenubarWindow ? 'notes' : view
 
   const {
     blocks,
@@ -37,11 +42,74 @@ export default function App(): React.JSX.Element {
       ?.getVersion()
       .then((v) => setVersion(v))
       .catch(() => setVersion('0.0.0'))
+
+    windowService
+      .getPlatform()
+      .then((platform) => {
+        const isMac = platform === 'darwin'
+        setIsMacOS(isMac)
+        if (!isMac) {
+          setAppMode('normal')
+          return
+        }
+
+        windowService
+          .getAppMode()
+          .then((mode) => setAppMode(mode))
+          .catch(() => setAppMode('normal'))
+      })
+      .catch(() => {
+        setIsMacOS(false)
+        setAppMode('normal')
+      })
+
+    windowService
+      .getWindowKind()
+      .then((kind) => {
+        setWindowKind(kind)
+        if (kind === 'menubar') {
+          setView('notes')
+        }
+      })
+      .catch(() => setWindowKind('main'))
+
+    const unsubscribeShowNotes = window.api.onShowNotes(() => {
+      setView('notes')
+    })
+
+    const unsubscribeAppModeChanged = window.api.onAppModeChanged((mode) => {
+      setAppMode(mode)
+      if (mode === 'menubar') {
+        setView('notes')
+      }
+    })
+
+    return () => {
+      unsubscribeShowNotes()
+      unsubscribeAppModeChanged()
+    }
   }, [])
 
   const handleTogglePin = async (): Promise<void> => {
     const pinned = await windowService.togglePin()
     setIsPinned(pinned)
+  }
+
+  const handleAppModeChange = async (mode: 'normal' | 'menubar'): Promise<void> => {
+    try {
+      const nextMode = await windowService.setAppMode(mode)
+      setAppMode(nextMode)
+    } catch {
+      setAppMode('normal')
+    }
+  }
+
+  const handleSwitchToNormalMode = (): void => {
+    void handleAppModeChange('normal')
+  }
+
+  const handleOpenNormalApp = async (): Promise<void> => {
+    await windowService.openNormalWindow()
   }
 
   if (!loaded) {
@@ -56,32 +124,47 @@ export default function App(): React.JSX.Element {
       style={{ fontFamily: 'var(--app-font-family)' }}
     >
       <TitleBar
-        view={view}
+        view={activeView}
+        isMenubarWindow={isMenubarWindow}
         isPinned={isPinned}
         onViewChange={setView}
         onTogglePin={handleTogglePin}
+        onSwitchToNormalMode={handleSwitchToNormalMode}
+        onOpenNormalApp={(): void => {
+          void handleOpenNormalApp()
+        }}
       />
 
-      <UpdateNotification
-        updateInfo={updateInfo}
-        onRestart={restartNow}
-        onSnooze={snoozeUpdate}
-        onDismiss={dismissUpdate}
-      />
+      {!isMenubarWindow && (
+        <UpdateNotification
+          updateInfo={updateInfo}
+          onRestart={restartNow}
+          onSnooze={snoozeUpdate}
+          onDismiss={dismissUpdate}
+        />
+      )}
 
-      <main className={cn('flex-1', view === 'canvas' ? 'overflow-hidden' : 'overflow-y-auto')}>
+      <main
+        className={cn(
+          'flex-1',
+          !isMenubarWindow && activeView === 'canvas' ? 'overflow-hidden' : 'overflow-y-auto'
+        )}
+      >
         <AnimatePresence mode="wait">
-          {view === 'canvas' ? (
+          {!isMenubarWindow && activeView === 'canvas' ? (
             <CanvasView />
           ) : (
             <div className="max-w-2xl mx-auto px-4 pt-5">
-              {view === 'config' ? (
+              {!isMenubarWindow && activeView === 'config' ? (
                 <ConfigView
                   settings={settings}
+                  isMacOS={isMacOS}
+                  appMode={appMode}
                   onFontSize={setFontSize}
                   onFontFamily={setFontFamily}
                   onCodeTheme={setCodeTheme}
                   onLigatures={setLigatures}
+                  onAppMode={handleAppModeChange}
                   onCheckUpdate={checkForUpdates}
                   updateInfo={updateInfo}
                   version={version}

@@ -10,8 +10,8 @@ const RELEASE_URL = 'https://github.com/torrescereno/infinito/releases/latest'
 const METADATA_URL =
   'https://github.com/torrescereno/infinito/releases/latest/download/update-metadata.json'
 
-const isWindows = process.platform === 'win32'
 const isMacOS = process.platform === 'darwin'
+const canAutoUpdate = process.platform !== 'linux' || !!process.env.APPIMAGE
 
 const POLL_INTERVALS = {
   normal: 60 * 60 * 1000,
@@ -34,10 +34,16 @@ export function setupAutoUpdater(mainWindow: BrowserWindow, store: Store<StoreSc
   storeRef = store
 
   autoUpdater.autoDownload = false
-  autoUpdater.autoInstallOnAppQuit = isWindows
+  autoUpdater.autoInstallOnAppQuit = false
 
   autoUpdater.on('update-available', (info) => {
     console.log('[AutoUpdater] Update available:', info.version)
+
+    if (!canAutoUpdate) {
+      showLinuxManualUpdateDialog(info.version)
+      return
+    }
+
     handleUpdateAvailable(info.version)
   })
 
@@ -241,6 +247,23 @@ async function fetchUpdateMetadata(): Promise<UpdateMetadata | null> {
     console.warn('[AutoUpdater] Could not fetch update metadata:', error)
     return null
   }
+}
+
+function showLinuxManualUpdateDialog(version: string): void {
+  dialog
+    .showMessageBox({
+      type: 'info',
+      title: 'Update available',
+      message: `A new version (${version}) is available.`,
+      detail:
+        'Automatic updates are only supported for AppImage installations. Please download the update manually.',
+      buttons: ['Download now', 'Later']
+    })
+    .then((result) => {
+      if (result.response === 0) {
+        shell.openExternal(RELEASE_URL)
+      }
+    })
 }
 
 function sendUpdateStatus(status: UpdateInfo): void {
