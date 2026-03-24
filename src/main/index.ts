@@ -47,6 +47,12 @@ function getIconPath(): string {
     : join(process.resourcesPath, 'icon.png')
 }
 
+function getTrayIconPath(): string {
+  return is.dev
+    ? join(__dirname, '../../resources/trayTemplate.png')
+    : join(process.resourcesPath, 'trayTemplate.png')
+}
+
 function registerWindowKind(window: BrowserWindow, kind: WindowKind): void {
   const webContentsId = window.webContents.id
   windowKinds.set(webContentsId, kind)
@@ -214,7 +220,7 @@ function destroyTray(): void {
 function createTray(): void {
   if (!isMac || tray) return
 
-  const trayIcon = nativeImage.createFromPath(getIconPath()).resize({ width: 18, height: 18 })
+  const trayIcon = nativeImage.createFromPath(getTrayIconPath()).resize({ width: 18, height: 18 })
   trayIcon.setTemplateImage(true)
 
   tray = new Tray(trayIcon)
