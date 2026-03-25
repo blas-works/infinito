@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.8.0](https://github.com/blas-works/infinito/compare/v1.7.1...v1.8.0) (2026-03-25)
+
+
+### Features
+
+* actualizacion de readme ([47dfa24](https://github.com/blas-works/infinito/commit/47dfa24d6824a6ea29056e2141d9b2ff8d021d1f))
+* actualizacion del readme ([ec2b936](https://github.com/blas-works/infinito/commit/ec2b936ce189c7bd37c8098dbb3dcccce14090d9))
+* actualizacion readme ([1c3c41d](https://github.com/blas-works/infinito/commit/1c3c41d26dd4ae7d3d860c9b3417a5d8d535a952))
+* se agrega readme ([26f8566](https://github.com/blas-works/infinito/commit/26f85665e25dc3f60dd630dd081d1f50b6709375))
+
 ## [1.7.1](https://github.com/blas-works/infinito/compare/v1.7.0...v1.7.1) (2026-03-25)
 
 
