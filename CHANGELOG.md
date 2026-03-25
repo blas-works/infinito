@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.9.0](https://github.com/blas-works/infinito/compare/v1.8.1...v1.9.0) (2026-03-25)
+
+
+### Features
+
+* actualizacion automatica con brew ([07c023c](https://github.com/blas-works/infinito/commit/07c023c50f13fabf33966a1cfad9a9aa95a0e7fa))
+
+
+### Bug Fixes
+
+* cierra la aplicacion antes de actualizar ([f6b5469](https://github.com/blas-works/infinito/commit/f6b546910d449850e68fe92624979fe46f59addc))
+
 ## [1.8.1](https://github.com/blas-works/infinito/compare/v1.8.0...v1.8.1) (2026-03-25)
 
 
