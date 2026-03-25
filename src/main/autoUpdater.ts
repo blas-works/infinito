@@ -1,5 +1,6 @@
 import { app, dialog, shell, BrowserWindow } from 'electron'
-import { execFile } from 'child_process'
+import { spawn } from 'child_process'
+import { accessSync, constants as fsConstants } from 'fs'
 import { autoUpdater } from 'electron-updater'
 import { is } from '@electron-toolkit/utils'
 import type Store from 'electron-store'
@@ -251,7 +252,7 @@ export function runBrewUpgrade(): void {
   const brewPaths = ['/opt/homebrew/bin/brew', '/usr/local/bin/brew']
   const brewPath = brewPaths.find((p) => {
     try {
-      require('fs').accessSync(p, require('fs').constants.X_OK)
+      accessSync(p, fsConstants.X_OK)
       return true
     } catch {
       return false
@@ -263,20 +264,25 @@ export function runBrewUpgrade(): void {
     return
   }
 
-  execFile(brewPath, ['upgrade', '--cask', 'infinito'], { timeout: 300_000 }, (error) => {
-    if (error) {
-      console.error('[AutoUpdater] Brew upgrade failed:', error.message)
-      sendUpdateStatus({ ...lastStatus, brewUpdating: false, brewError: 'Upgrade failed' })
-      return
-    }
+  // Spawn a detached process that:
+  // 1. Runs brew upgrade --cask
+  // 2. Reopens the app after brew finishes
+  // This process survives even if brew force-quits the Electron app
+  const child = spawn(
+    'sh',
+    [
+      '-c',
+      `${brewPath} upgrade --cask infinito 2>&1 && sleep 1 && open -a "Infinito"`
+    ],
+    { detached: true, stdio: 'ignore' }
+  )
+  child.unref()
 
-    console.log('[AutoUpdater] Brew upgrade completed, relaunching...')
-    sendUpdateStatus({ ...lastStatus, brewUpdating: false })
-    setTimeout(() => {
-      app.relaunch()
-      app.exit(0)
-    }, 500)
-  })
+  // Give the UI a moment to show "Updating..." then quit gracefully
+  // so brew doesn't need to force-kill the process
+  setTimeout(() => {
+    app.exit(0)
+  }, 1000)
 }
 
 export function snoozeCriticalRestart(): void {
