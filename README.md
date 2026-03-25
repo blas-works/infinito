@@ -65,28 +65,24 @@ brew tap blas-works/apps
 **Step 2:** Install:
 
 ```bash
-brew install --cask hollow
 brew install --cask infinito
 ```
 
 Or install without prior tap:
 
 ```bash
-brew install --cask blas-works/apps/hollow
 brew install --cask blas-works/apps/infinito
 ```
 
 **Update** (when a new version is released):
 
 ```bash
-brew upgrade --cask hollow
 brew upgrade --cask infinito
 ```
 
 **Option 2** — One-liner without prior tap:
 
 ```bash
-brew install --cask blas-works/apps/hollow
 brew install --cask blas-works/apps/infinito
 ```
 
