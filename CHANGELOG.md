@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/blas-works/infinito/compare/v1.8.0...v1.8.1) (2026-03-25)
+
+
+### Bug Fixes
+
+* actualizacion automatica en mac ([0bd5f52](https://github.com/blas-works/infinito/commit/0bd5f52e41d1216089b23ac2f48b2e3853d4cd24))
+
 ## [1.8.0](https://github.com/blas-works/infinito/compare/v1.7.1...v1.8.0) (2026-03-25)
 
 
