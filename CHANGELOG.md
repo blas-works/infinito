@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.1](https://github.com/blas-works/infinito/compare/v1.7.0...v1.7.1) (2026-03-25)
+
+
+### Bug Fixes
+
+* auto-trigger homebrew cask update after macOS build ([ed28d10](https://github.com/blas-works/infinito/commit/ed28d106d83c9c75f8bc5782d3b1a185c62d9d75))
+* instalacion win ([bffebbc](https://github.com/blas-works/infinito/commit/bffebbc32d3a1b0d61a46ed68c02fe8495b2f0c5))
+
 ## [1.7.0](https://github.com/blas-works/infinito/compare/v1.6.0...v1.7.0) (2026-03-25)
 
 
