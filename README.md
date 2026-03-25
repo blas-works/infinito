@@ -147,9 +147,3 @@ bun run dev
 | `bun run test:coverage` | Run tests with coverage report     |
 
 </details>
-
----
-
-<div align="center">
-  <sub>Made with ❤️ by <a href="https://github.com/blas-works">blas-works</a></sub>
-</div>
