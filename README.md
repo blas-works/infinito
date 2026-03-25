@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="build/icon.png" alt="Infinito Logo" width="120" height="120">
+  <img src="resources/icon.png" alt="Infinito Logo" width="120" height="120">
 
   <h1>Infinito</h1>
 
@@ -28,62 +28,59 @@
   </p>
 
   <p>
-    <a href="#features">Features</a> •
-    <a href="#installation">Installation</a> •
-    <a href="#development">Development</a>
+    <a href="#-features">Features</a> •
+    <a href="#-installation">Installation</a> •
+    <a href="#-development">Development</a>
   </p>
 </div>
 
 ---
 
-## Features
+## ✨ Features
 
-| **Notes**    | Infinite canvas with pan and zoom               |
-| :----------- | :---------------------------------------------- |
-|              | Markdown support with syntax highlighting       |
-|              | Mermaid diagram rendering in code blocks        |
-|              | Date-based organization with collapsible groups |
-| **Canvas**   | Shape tools: rectangles, circles, triangles     |
-|              | Lines and arrows with Bezier curves             |
-|              | Text elements with customizable font            |
-|              | Color presets and line styles (solid/dash/dot)  |
-| **Settings** | Configurable font size and family               |
-|              | Syntax theme selection                          |
-| **Data**     | Local SQLite storage, no cloud required         |
-|              | Offline-first design, privacy-focused           |
+| 📝 **Notes**                | Markdown support with syntax highlighting             |
+| :-------------------------- | :---------------------------------------------------- |
+|                             | Mermaid diagram rendering in code blocks              |
+|                             | Date-based organization with collapsible groups       |
+|                             | Vim mode for keyboard navigation (h/l, j/k, 1-4 tabs) |
+| 🎨 **Canvas**               | Excalidraw-powered infinite canvas                    |
+|                             | Multiple sessions with local persistence              |
+|                             | Shape tools, text elements, and freehand drawing      |
+| ⚙️ **Editor Configuration** | 8 font families (Inter, JetBrains, Fira Code, etc.)   |
+|                             | 7 font sizes (11-17px)                                |
+|                             | 12 syntax themes (Tokyo Night, Dracula, Nord, etc.)   |
+|                             | Ligatures toggle for programming fonts                |
+| 🖥️ **macOS Features**       | Menu bar mode for quick access                        |
+|                             | Always-on-top window pinning                          |
+| 🔄 **Automatic Updates**    | Smart updates with priority levels (normal/security)  |
+|                             | Manual check and snooze options                       |
+| 💾 **Local Storage**        | Private data stored locally, no cloud required        |
+|                             | SQLite database with Drizzle ORM                      |
+|                             | Offline-first design, privacy-focused                 |
 
-## Installation
+## 🚀 Installation
 
-### Homebrew
+### Homebrew (macOS/Linux)
 
-**Step 1:** Add the tap (first time only):
+Install Infinito via [Homebrew](https://brew.sh):
+
+**Option 1 — Add tap first (recommended):**
 
 ```bash
 brew tap blas-works/apps
-```
-
-**Step 2:** Install:
-
-```bash
 brew install --cask infinito
 ```
 
-Or install without prior tap:
+**Option 2 — One-liner without tap:**
 
 ```bash
 brew install --cask blas-works/apps/infinito
 ```
 
-**Update** (when a new version is released):
+To upgrade to the latest version:
 
 ```bash
 brew upgrade --cask infinito
-```
-
-**Option 2** — One-liner without prior tap:
-
-```bash
-brew install --cask blas-works/apps/infinito
 ```
 
 ### Manual Download
@@ -107,14 +104,14 @@ xattr -cr /Applications/Infinito.app
 
 > **Note:** Automatic updates are not available on macOS (requires Apple Developer signature). Download new versions manually from [Releases](https://github.com/blas-works/infinito/releases/latest).
 
-## Development
+### Development
 
-### Prerequisites
+#### Prerequisites
 
 - **Node.js** >= 18.x
-- **Bun** >= 1.0
+- **Bun** >= 1.0 (recommended) or npm
 
-### Quick Start
+#### Quick Start
 
 ```bash
 # Clone the repository
@@ -129,7 +126,7 @@ bun run dev
 ```
 
 <details>
-<summary><b>Development Scripts</b></summary>
+<summary><b>📖 Development Scripts</b></summary>
 
 | Command                 | Description                        |
 | ----------------------- | ---------------------------------- |
@@ -141,5 +138,7 @@ bun run dev
 | `bun run test`          | Run tests in watch mode            |
 | `bun run test:run`      | Run tests once                     |
 | `bun run test:coverage` | Run tests with coverage report     |
+| `bun run lint`          | Lint code with ESLint              |
+| `bun run typecheck`     | Type check with TypeScript         |
 
 </details>
