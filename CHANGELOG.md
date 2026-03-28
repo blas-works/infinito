@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.9.1](https://github.com/blas-works/infinito/compare/v1.9.0...v1.9.1) (2026-03-28)
+
+
+### Bug Fixes
+
+* inforamación desde tray al modo normal ([d135e2a](https://github.com/blas-works/infinito/commit/d135e2aef1f9f904f7ae8b7d04a8f3ed8705b98d))
+* lint ([b2ca650](https://github.com/blas-works/infinito/commit/b2ca65004575bb136e3350d3abf6d400004fe4e5))
+* test ([dce0411](https://github.com/blas-works/infinito/commit/dce04114e2168ee6d998698aa49c396ffc575747))
+
 ## [1.9.0](https://github.com/blas-works/infinito/compare/v1.8.1...v1.9.0) (2026-03-25)
 
 
