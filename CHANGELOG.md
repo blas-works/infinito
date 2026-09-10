@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.2](https://github.com/blas-works/infinito/compare/v1.15.1...v1.15.2) (2026-09-10)
+
+
+### Bug Fixes
+
+* move mod+w shortcut to note session bar ([3ac3aef](https://github.com/blas-works/infinito/commit/3ac3aef0b0aa5d5d0fd7b4ef7943aab15d24e0e2))
+
 ## [1.15.1](https://github.com/blas-works/infinito/compare/v1.15.0...v1.15.1) (2026-07-27)
 
 
