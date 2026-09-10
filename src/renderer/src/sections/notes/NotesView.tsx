@@ -27,9 +27,6 @@ export function NotesView({ reloadTrigger }: { reloadTrigger?: number }): React.
 
   useKeyboardShortcut('mod+e', toggleMode)
   useKeyboardShortcut('mod+n', createSession)
-  useKeyboardShortcut('mod+w', () => {
-    if (activeSessionId) deleteSession(activeSessionId)
-  })
 
   useEffect(() => {
     if (mode === 'edit' && textareaRef.current) {

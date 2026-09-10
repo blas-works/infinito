@@ -3,7 +3,7 @@ import { Plus, X, Pencil, Eye, ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@renderer/lib/utils'
 import type { NoteSession } from '@renderer/types'
 import { ConfirmDialog } from '@renderer/components/ui/ConfirmDialog'
-import { useScrollableTabs } from '@renderer/hooks'
+import { useKeyboardShortcut, useScrollableTabs } from '@renderer/hooks'
 
 export type EditorMode = 'edit' | 'preview'
 
@@ -135,6 +135,10 @@ export function NoteSessionBar({
   } = useScrollableTabs()
 
   const pendingSession = pendingDeleteId ? sessions.find((s) => s.id === pendingDeleteId) : null
+
+  useKeyboardShortcut('mod+w', () => {
+    setPendingDeleteId(activeSessionId)
+  })
 
   const handleConfirmDelete = useCallback(() => {
     if (pendingDeleteId) {
