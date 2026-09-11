@@ -3,6 +3,7 @@ import {
   FONT_SIZES,
   FONT_FAMILIES,
   CODE_THEMES,
+  CONTENT_WIDTHS,
   DEFAULT_SETTINGS,
   type Settings,
   type FontSize,
@@ -59,13 +60,24 @@ describe('CODE_THEMES', () => {
   })
 })
 
+describe('CONTENT_WIDTHS', () => {
+  it('should offer narrow, wide and full widths', () => {
+    expect(CONTENT_WIDTHS).toEqual([
+      { id: 'narrow', label: 'Narrow', value: '42rem' },
+      { id: 'wide', label: 'Wide', value: '64rem' },
+      { id: 'full', label: 'Full', value: 'none' }
+    ])
+  })
+})
+
 describe('DEFAULT_SETTINGS', () => {
   it('should have correct default values', () => {
     expect(DEFAULT_SETTINGS).toEqual({
       fontSize: 12,
       fontFamily: 'inter',
       codeTheme: 'zinc',
-      ligatures: false
+      ligatures: false,
+      contentWidth: 'narrow'
     })
   })
 
@@ -74,6 +86,7 @@ describe('DEFAULT_SETTINGS', () => {
     expect(settings.fontSize).toBeDefined()
     expect(settings.fontFamily).toBeDefined()
     expect(settings.codeTheme).toBeDefined()
+    expect(settings.contentWidth).toBeDefined()
   })
 })
 
@@ -83,11 +96,13 @@ describe('Settings type', () => {
       fontSize: 14,
       fontFamily: 'jetbrains',
       codeTheme: 'tokyo-night',
-      ligatures: false
+      ligatures: false,
+      contentWidth: 'wide'
     }
     expect(settings.fontSize).toBe(14)
     expect(settings.fontFamily).toBe('jetbrains')
     expect(settings.codeTheme).toBe('tokyo-night')
+    expect(settings.contentWidth).toBe('wide')
   })
 })
 

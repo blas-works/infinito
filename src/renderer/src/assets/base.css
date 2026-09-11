@@ -24,6 +24,7 @@
   --app-font-family: 'Inter', sans-serif;
   --app-font-ligatures: none;
   --app-font-features: 'liga' 0, 'calt' 0;
+  --app-content-width: 42rem;
 }
 
 * {

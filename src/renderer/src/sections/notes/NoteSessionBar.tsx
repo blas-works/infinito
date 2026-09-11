@@ -166,7 +166,7 @@ export function NoteSessionBar({
 
   return (
     <>
-      <div className="max-w-2xl mx-auto w-full flex items-center h-7 px-2 bg-zinc-950/80 backdrop-blur-sm border-b border-zinc-800/30">
+      <div className="max-w-(--app-content-width) mx-auto w-full flex items-center h-7 px-2 bg-zinc-950/80 backdrop-blur-sm border-b border-zinc-800/30">
         <button
           type="button"
           onClick={scrollLeft}

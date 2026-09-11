@@ -36,7 +36,8 @@ export default function App(): React.JSX.Element {
     deleteGroup
   } = useBlocks(reloadTrigger)
 
-  const { settings, setFontSize, setFontFamily, setCodeTheme, setLigatures } = useSettings()
+  const { settings, setFontSize, setFontFamily, setCodeTheme, setLigatures, setContentWidth } =
+    useSettings()
   const { updateInfo, checkForUpdates, restartNow, snoozeUpdate, brewUpgrade, dismissUpdate } =
     useUpdate()
 
@@ -141,6 +142,7 @@ export default function App(): React.JSX.Element {
   }
 
   const showBrewOverlay = updateInfo?.brewUpdating === true && !!updateInfo.brewStep
+  const showConfig = !isMenubarWindow && activeView === 'config'
 
   if (!loaded) {
     return (
@@ -201,8 +203,13 @@ export default function App(): React.JSX.Element {
           ) : activeView === 'notes' ? (
             <NotesView reloadTrigger={reloadTrigger} />
           ) : (
-            <div className="max-w-2xl mx-auto px-4 pt-5">
-              {!isMenubarWindow && activeView === 'config' ? (
+            <div
+              className={cn(
+                'mx-auto px-4 pt-5',
+                showConfig ? 'max-w-2xl' : 'max-w-(--app-content-width)'
+              )}
+            >
+              {showConfig ? (
                 <ConfigView
                   settings={settings}
                   isMacOS={isMacOS}
@@ -211,6 +218,7 @@ export default function App(): React.JSX.Element {
                   onFontFamily={setFontFamily}
                   onCodeTheme={setCodeTheme}
                   onLigatures={setLigatures}
+                  onContentWidth={setContentWidth}
                   onAppMode={handleAppModeChange}
                   onCheckUpdate={checkForUpdates}
                   updateInfo={updateInfo}
