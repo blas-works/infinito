@@ -1,10 +1,13 @@
-import { useEffect, useRef } from 'react'
-import { ChevronRight, ChevronDown, Trash2 } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { ChevronRight, ChevronDown, Trash2, Copy, Check, Pencil } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '@renderer/lib/utils'
+import { formatForClipboard } from '@renderer/lib/clipboard'
 import type { Block } from '@renderer/types'
 import { useAutoResize } from '@renderer/hooks'
 import { BlockItem } from './BlockItem'
+
+const COPIED_FEEDBACK_MS = 1500
 
 interface DateGroupProps {
   dateBlock: Block
@@ -31,6 +34,8 @@ export function DateGroup({
 }: DateGroupProps): React.JSX.Element {
   const dateLabel = dateBlock.content.replace('# ', '').trim()
   const dateInputRef = useRef<HTMLTextAreaElement>(null)
+  const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [copied, setCopied] = useState(false)
   const autoResize = useAutoResize()
 
   useEffect(() => {
@@ -42,11 +47,33 @@ export function DateGroup({
     }
   }, [focusedId, dateBlock.id, autoResize])
 
+  useEffect(() => {
+    return () => {
+      if (copiedTimeoutRef.current) clearTimeout(copiedTimeoutRef.current)
+    }
+  }, [])
+
   const handleDateKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
     if (e.key === 'Enter') {
       e.preventDefault()
       onFocus(null)
     }
+  }
+
+  const handleCopy = async (block: Block): Promise<void> => {
+    try {
+      await navigator.clipboard.writeText(formatForClipboard(block.content))
+    } catch {
+      return
+    }
+    setCopied(true)
+    if (copiedTimeoutRef.current) clearTimeout(copiedTimeoutRef.current)
+    copiedTimeoutRef.current = setTimeout(() => setCopied(false), COPIED_FEEDBACK_MS)
+  }
+
+  const handleEdit = (block: Block): void => {
+    if (isCollapsed) onToggle()
+    onFocus(block.id)
   }
 
   return (
@@ -89,6 +116,31 @@ export function DateGroup({
           >
             {dateLabel}
           </span>
+        )}
+
+        {contentBlock && contentBlock.content.trim() !== '' && (
+          <button
+            onClick={() => handleCopy(contentBlock)}
+            className={cn(
+              'shrink-0 flex items-center justify-center w-5 h-5 rounded-sm transition-all',
+              copied
+                ? 'opacity-100 text-zinc-300'
+                : 'opacity-0 group-hover/date:opacity-100 text-zinc-600 hover:text-zinc-300'
+            )}
+            title={copied ? 'Copied' : 'Copy note'}
+          >
+            {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+          </button>
+        )}
+
+        {contentBlock && (
+          <button
+            onClick={() => handleEdit(contentBlock)}
+            className="opacity-0 group-hover/date:opacity-100 shrink-0 flex items-center justify-center w-5 h-5 rounded-sm text-zinc-600 hover:text-zinc-300 transition-all"
+            title="Edit note"
+          >
+            <Pencil className="w-3 h-3" />
+          </button>
         )}
 
         <button
