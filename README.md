@@ -56,6 +56,7 @@
 |                             | 7 font sizes (11–17px)                                                                                                                        |
 |                             | 12 syntax themes (Tokyo Night, Dracula, Nord, Catppuccin, Gruvbox, One Dark, Monokai, Rose Pine, Ayu Dark, GitHub Dark, Solarized Dark, Zinc) |
 |                             | Ligatures toggle for programming fonts                                                                                                        |
+|                             | 3 content widths (Narrow, Wide, Full) for large windows                                                                                       |
 | 🖥️ **macOS Features**       | Menu bar mode with compact window for quick access                                                                                            |
 |                             | Always-on-top window pinning                                                                                                                  |
 |                             | Homebrew-based auto-update with animated overlay                                                                                              |

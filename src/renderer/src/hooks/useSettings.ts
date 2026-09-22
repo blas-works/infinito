@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
-import type { Settings, FontSize, FontFamily, CodeTheme } from '@renderer/types'
-import { DEFAULT_SETTINGS, FONT_FAMILIES } from '@renderer/types'
+import type { Settings, FontSize, FontFamily, CodeTheme, ContentWidth } from '@renderer/types'
+import { DEFAULT_SETTINGS, FONT_FAMILIES, CONTENT_WIDTHS } from '@renderer/types'
 
 const STORAGE_KEY = 'infinito-settings'
 
@@ -34,6 +34,11 @@ function applyToDOM(settings: Settings): void {
     settings.ligatures ? '"liga" 1, "calt" 1' : '"liga" 0, "calt" 0'
   )
 
+  const contentWidth = CONTENT_WIDTHS.find((w) => w.id === settings.contentWidth)
+  if (contentWidth) {
+    root.style.setProperty('--app-content-width', contentWidth.value)
+  }
+
   document.body.className = document.body.className.replace(/theme-[\w-]+/g, '').trim()
 
   if (settings.codeTheme !== 'zinc') {
@@ -47,6 +52,7 @@ export function useSettings(): {
   setFontFamily: (family: FontFamily) => void
   setCodeTheme: (theme: CodeTheme) => void
   setLigatures: (ligatures: boolean) => void
+  setContentWidth: (width: ContentWidth) => void
 } {
   const [settings, setSettings] = useState<Settings>(loadSettings)
 
@@ -71,5 +77,9 @@ export function useSettings(): {
     setSettings((prev) => ({ ...prev, ligatures }))
   }, [])
 
-  return { settings, setFontSize, setFontFamily, setCodeTheme, setLigatures }
+  const setContentWidth = useCallback((contentWidth: ContentWidth) => {
+    setSettings((prev) => ({ ...prev, contentWidth }))
+  }, [])
+
+  return { settings, setFontSize, setFontFamily, setCodeTheme, setLigatures, setContentWidth }
 }

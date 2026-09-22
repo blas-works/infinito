@@ -2,11 +2,19 @@ import { useState, useRef, useEffect } from 'react'
 import { Check, RefreshCw, Github } from 'lucide-react'
 import { cn } from '@renderer/lib/utils'
 import { Button } from '@renderer/components/ui/button'
-import type { FontSize, FontFamily, CodeTheme, Settings, UpdateInfo } from '@renderer/types'
+import type {
+  FontSize,
+  FontFamily,
+  CodeTheme,
+  ContentWidth,
+  Settings,
+  UpdateInfo
+} from '@renderer/types'
 import {
   FONT_SIZES,
   FONT_FAMILIES,
   CODE_THEMES,
+  CONTENT_WIDTHS,
   SHORTCUT_GROUPS,
   SHORTCUTS,
   formatShortcutKeys
@@ -21,6 +29,7 @@ interface ConfigViewProps {
   onFontFamily: (family: FontFamily) => void
   onCodeTheme: (theme: CodeTheme) => void
   onLigatures: (enabled: boolean) => void
+  onContentWidth: (width: ContentWidth) => void
   onAppMode: (mode: 'normal' | 'menubar') => void
   onCheckUpdate: () => void
   updateInfo: UpdateInfo | null
@@ -35,6 +44,7 @@ export function ConfigView({
   onFontFamily,
   onCodeTheme,
   onLigatures,
+  onContentWidth,
   onAppMode,
   onCheckUpdate,
   updateInfo,
@@ -158,6 +168,37 @@ export function ConfigView({
               )
             })}
           </div>
+        </section>
+      </div>
+
+      {/* Layout */}
+      <div className="rounded-xl bg-zinc-900/40 border border-zinc-800/30 p-4 space-y-3">
+        <h2 className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">
+          Layout
+        </h2>
+
+        {/* Content Width */}
+        <section className="space-y-2">
+          <label className="text-[11px] text-zinc-400">Content width</label>
+          <div className="flex items-center gap-1">
+            {CONTENT_WIDTHS.map((width) => (
+              <button
+                key={width.id}
+                onClick={() => onContentWidth(width.id)}
+                className={cn(
+                  'h-7 px-3 rounded-md text-[11px] font-mono transition-colors',
+                  settings.contentWidth === width.id
+                    ? 'bg-zinc-700/60 text-zinc-200'
+                    : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50'
+                )}
+              >
+                {width.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-[10px] text-zinc-500">
+            Maximum width of Daily and Notes on large windows.
+          </p>
         </section>
       </div>
 

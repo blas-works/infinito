@@ -120,4 +120,62 @@ describe('useSettings', () => {
     const jetbrainsFont = FONT_FAMILIES.find((f) => f.id === 'jetbrains')
     expect(fontFamily).toBe(jetbrainsFont?.value)
   })
+
+  it('should toggle ligatures and apply them to DOM', () => {
+    const { result } = renderHook(() => useSettings())
+
+    act(() => {
+      result.current.setLigatures(true)
+    })
+
+    expect(result.current.settings.ligatures).toBe(true)
+    expect(document.documentElement.style.getPropertyValue('--app-font-ligatures')).toBe('normal')
+  })
+
+  it('should not apply an unknown font family to DOM', () => {
+    document.documentElement.style.removeProperty('--app-font-family')
+    localStorage.setItem('infinito-settings', JSON.stringify({ fontFamily: 'comic-sans' }))
+
+    renderHook(() => useSettings())
+
+    expect(document.documentElement.style.getPropertyValue('--app-font-family')).toBe('')
+  })
+
+  it('should default content width to narrow', () => {
+    const { result } = renderHook(() => useSettings())
+
+    expect(result.current.settings.contentWidth).toBe('narrow')
+    expect(document.documentElement.style.getPropertyValue('--app-content-width')).toBe('42rem')
+  })
+
+  it('should set content width and apply it to DOM', () => {
+    const { result } = renderHook(() => useSettings())
+
+    act(() => {
+      result.current.setContentWidth('full')
+    })
+
+    expect(result.current.settings.contentWidth).toBe('full')
+    expect(document.documentElement.style.getPropertyValue('--app-content-width')).toBe('none')
+  })
+
+  it('should keep narrow width for settings saved before content width existed', () => {
+    localStorage.setItem(
+      'infinito-settings',
+      JSON.stringify({ fontSize: 14, fontFamily: 'inter', codeTheme: 'zinc', ligatures: false })
+    )
+
+    const { result } = renderHook(() => useSettings())
+
+    expect(result.current.settings.contentWidth).toBe('narrow')
+  })
+
+  it('should not apply an unknown content width to DOM', () => {
+    document.documentElement.style.removeProperty('--app-content-width')
+    localStorage.setItem('infinito-settings', JSON.stringify({ contentWidth: 'huge' }))
+
+    renderHook(() => useSettings())
+
+    expect(document.documentElement.style.getPropertyValue('--app-content-width')).toBe('')
+  })
 })

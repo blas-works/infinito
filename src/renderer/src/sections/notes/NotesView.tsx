@@ -112,7 +112,7 @@ export function NotesView({ reloadTrigger }: { reloadTrigger?: number }): React.
 
       <div className="flex-1 overflow-y-auto">
         {mode === 'edit' ? (
-          <div className="max-w-2xl mx-auto p-4 h-full">
+          <div className="max-w-(--app-content-width) mx-auto p-4 h-full">
             <textarea
               ref={textareaRef}
               key={activeSessionId}
@@ -127,7 +127,7 @@ export function NotesView({ reloadTrigger }: { reloadTrigger?: number }): React.
             />
           </div>
         ) : (
-          <div className="max-w-2xl mx-auto p-4">
+          <div className="max-w-(--app-content-width) mx-auto p-4">
             {activeContent ? (
               <div
                 className="prose prose-invert prose-zinc max-w-none

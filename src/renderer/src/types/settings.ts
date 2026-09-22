@@ -24,6 +24,8 @@ export type CodeTheme =
   | 'rose-pine'
   | 'ayu-dark'
 
+export type ContentWidth = 'narrow' | 'wide' | 'full'
+
 export interface CodeThemeOption {
   id: CodeTheme
   label: string
@@ -35,6 +37,7 @@ export interface Settings {
   fontFamily: FontFamily
   codeTheme: CodeTheme
   ligatures: boolean
+  contentWidth: ContentWidth
 }
 
 export const FONT_SIZES: FontSize[] = [11, 12, 13, 14, 15, 16, 17]
@@ -89,9 +92,16 @@ export const CODE_THEMES: CodeThemeOption[] = [
   { id: 'ayu-dark', label: 'Ayu Dark', colors: ['#f07178', '#aad94c', '#e6b450', '#59c2ff'] }
 ]
 
+export const CONTENT_WIDTHS: { id: ContentWidth; label: string; value: string }[] = [
+  { id: 'narrow', label: 'Narrow', value: '42rem' },
+  { id: 'wide', label: 'Wide', value: '64rem' },
+  { id: 'full', label: 'Full', value: 'none' }
+]
+
 export const DEFAULT_SETTINGS: Settings = {
   fontSize: 12,
   fontFamily: 'inter',
   codeTheme: 'zinc',
-  ligatures: false
+  ligatures: false,
+  contentWidth: 'narrow'
 }
