@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.16.0](https://github.com/blas-works/infinito/compare/v1.15.2...v1.16.0) (2026-09-22)
+
+
+### Features
+
+* add content width setting for large windows ([9ebb48c](https://github.com/blas-works/infinito/commit/9ebb48c51b711e8007c01e9b0e2f6e7ca266a97d))
+* add content width setting for large windows ([364c339](https://github.com/blas-works/infinito/commit/364c3395974bdfae83e1bcee574716ad0fe2ca5e))
+* add copy and edit actions to daily note header ([4894d58](https://github.com/blas-works/infinito/commit/4894d581b4cfbbaf8c58b3dbc53cad21766b2bdf))
+* add copy and edit actions to daily note header ([c70bf3c](https://github.com/blas-works/infinito/commit/c70bf3c8c096ccbb6a3491ac22bcb47a24f49460))
+
 ## [1.15.2](https://github.com/blas-works/infinito/compare/v1.15.1...v1.15.2) (2026-09-10)
 
 
