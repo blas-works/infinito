@@ -137,13 +137,13 @@ export function NotesView({ reloadTrigger }: { reloadTrigger?: number }): React.
                   prose-ul:my-1 prose-ol:my-1 prose-li:my-0
                   prose-a:text-zinc-400 hover:prose-a:text-zinc-200 prose-a:underline prose-a:underline-offset-2
                   prose-code:text-zinc-400 prose-code:bg-zinc-900 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:border-0
-                  prose-pre:bg-zinc-900 prose-pre:p-0 prose-pre:rounded-lg prose-pre:overflow-hidden prose-pre:border prose-pre:border-zinc-800/40
+                  prose-pre:bg-zinc-900 prose-pre:p-0 prose-pre:rounded-lg prose-pre:overflow-x-auto prose-pre:border prose-pre:border-zinc-800/40
                   prose-blockquote:border-zinc-700 prose-blockquote:text-zinc-400
                   prose-hr:border-zinc-800
                   prose-img:rounded-md prose-img:max-h-64
                   prose-th:text-zinc-300 prose-th:border-zinc-700 prose-th:py-1.5 prose-th:px-2
                   prose-td:border-zinc-800 prose-td:py-1.5 prose-td:px-2
-                  text-zinc-300 [&_input[type=checkbox]]:accent-zinc-500
+                  text-zinc-300 break-words [&_table]:block [&_table]:overflow-x-auto [&_input[type=checkbox]]:accent-zinc-500
                   [&_.contains-task-list]:list-none [&_.contains-task-list]:pl-1"
                 style={{ fontSize: 'var(--app-font-size)' }}
               >
