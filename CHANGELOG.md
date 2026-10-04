@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.1](https://github.com/blas-works/infinito/compare/v1.16.0...v1.16.1) (2026-10-04)
+
+
+### Code Refactoring
+
+* migrate from Bun to pnpm for dependency management and update CI/CD workflows ([3990eab](https://github.com/blas-works/infinito/commit/3990eabaeac47c3e7f3ce3db58388a66da596ee9))
+
 ## [1.16.0](https://github.com/blas-works/infinito/compare/v1.15.2...v1.16.0) (2026-09-22)
 
 
