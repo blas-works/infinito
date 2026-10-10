@@ -1,10 +1,7 @@
 import { useEffect, useRef } from 'react'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import rehypeHighlight from 'rehype-highlight'
 import type { Block } from '@renderer/types'
 import { useAutoResize } from '@renderer/hooks'
-import { CodeBlock } from '@renderer/components/markdown'
+import { MarkdownContent } from '@renderer/components/markdown'
 
 interface BlockItemProps {
   block: Block
@@ -128,28 +125,7 @@ export function BlockItem({
             if (idx >= 0) handleCheckboxToggle(idx)
           }}
         >
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeHighlight]}
-            components={{
-              code: CodeBlock,
-              input: ({ type, checked }) => {
-                if (type === 'checkbox') {
-                  return (
-                    <input
-                      type="checkbox"
-                      checked={checked ?? false}
-                      onChange={() => {}}
-                      className="accent-zinc-500 cursor-pointer mr-1.5"
-                    />
-                  )
-                }
-                return <input type={type} />
-              }
-            }}
-          >
-            {block.content}
-          </ReactMarkdown>
+          <MarkdownContent content={block.content} interactiveCheckboxes />
         </div>
       ) : (
         <span className="text-zinc-800 text-xs opacity-0 group-hover:opacity-100 transition-opacity select-none">

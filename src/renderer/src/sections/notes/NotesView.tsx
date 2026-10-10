@@ -1,9 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import rehypeHighlight from 'rehype-highlight'
 import { useNoteSessions, useKeyboardShortcut } from '@renderer/hooks'
-import { CodeBlock } from '@renderer/components/markdown'
+import { MarkdownContent } from '@renderer/components/markdown'
 import { NoteSessionBar, type EditorMode } from './NoteSessionBar'
 
 export function NotesView({ reloadTrigger }: { reloadTrigger?: number }): React.JSX.Element {
@@ -147,15 +144,7 @@ export function NotesView({ reloadTrigger }: { reloadTrigger?: number }): React.
                   [&_.contains-task-list]:list-none [&_.contains-task-list]:pl-1"
                 style={{ fontSize: 'var(--app-font-size)' }}
               >
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeHighlight]}
-                  components={{
-                    code: CodeBlock
-                  }}
-                >
-                  {activeContent}
-                </ReactMarkdown>
+                <MarkdownContent content={activeContent} />
               </div>
             ) : (
               <p className="text-zinc-600 text-xs text-center py-12">
