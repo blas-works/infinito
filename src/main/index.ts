@@ -1,6 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain, nativeImage, Tray, Menu } from 'electron'
 import { join } from 'path'
-import { URL } from 'url'
+import { URL, pathToFileURL } from 'url'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import Store from 'electron-store'
 import { initDatabase, closeDatabase } from '../database/client'
@@ -58,6 +58,34 @@ let tray: Tray | null = null
 let isQuitting = false
 
 const windowKinds = new Map<number, WindowKind>()
+
+function isAppUrl(url: string): boolean {
+  try {
+    const target = new URL(url)
+    if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+      return target.origin === new URL(process.env['ELECTRON_RENDERER_URL']).origin
+    }
+    const appPage = pathToFileURL(join(__dirname, '../renderer/index.html'))
+    return target.protocol === 'file:' && target.pathname === appPage.pathname
+  } catch {
+    return false
+  }
+}
+
+function secureWebContents(window: BrowserWindow): void {
+  window.webContents.setWindowOpenHandler((details) => {
+    safeOpenExternal(details.url)
+    return { action: 'deny' }
+  })
+
+  // Links rendered from markdown would otherwise navigate the app window away,
+  // leaving an external page with access to the preload API
+  window.webContents.on('will-navigate', (event, url) => {
+    if (isAppUrl(url)) return
+    event.preventDefault()
+    safeOpenExternal(url)
+  })
+}
 
 function getIconPath(): string {
   return is.dev
@@ -183,10 +211,7 @@ function createMenubarWindow(): void {
     }
   })
 
-  menubarWindow.webContents.setWindowOpenHandler((details) => {
-    safeOpenExternal(details.url)
-    return { action: 'deny' }
-  })
+  secureWebContents(menubarWindow)
 
   loadWindowContent(menubarWindow, 'menubar')
 }
@@ -289,14 +314,22 @@ function flushMenubarSaves(): Promise<void> {
       return
     }
 
-    const timeout = setTimeout(() => resolve(), 2000)
+    const sender = menubarWindow.webContents
 
-    ipcMain.once('blocks:flushed', () => {
+    const finish = (): void => {
       clearTimeout(timeout)
+      ipcMain.removeListener('blocks:flushed', onFlushed)
       resolve()
-    })
+    }
 
-    menubarWindow.webContents.send('app:flush-pending-saves')
+    const onFlushed = (event: Electron.IpcMainEvent): void => {
+      if (event.sender === sender) finish()
+    }
+
+    const timeout = setTimeout(finish, 2000)
+    ipcMain.on('blocks:flushed', onFlushed)
+
+    sender.send('app:flush-pending-saves')
   })
 }
 
@@ -397,12 +430,22 @@ function createMainWindow(showOnReady: boolean): void {
     }
   })
 
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    safeOpenExternal(details.url)
-    return { action: 'deny' }
-  })
+  secureWebContents(mainWindow)
 
   loadWindowContent(mainWindow, 'main')
+}
+
+function isBlockList(value: unknown): value is { id: string; content: string }[] {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (item) =>
+        typeof item === 'object' &&
+        item !== null &&
+        typeof item.id === 'string' &&
+        typeof item.content === 'string'
+    )
+  )
 }
 
 function getTargetWindow(
@@ -459,7 +502,11 @@ if (!gotTheLock) {
       return blockRepository.findAll()
     })
 
-    ipcMain.handle('db:save-blocks', (_event, blocks: { id: string; content: string }[]) => {
+    ipcMain.handle('db:save-blocks', (_event, blocks: unknown) => {
+      if (!isBlockList(blocks)) {
+        console.warn('[DB] Rejected db:save-blocks with invalid payload')
+        return
+      }
       blockRepository.saveAll(blocks)
     })
 

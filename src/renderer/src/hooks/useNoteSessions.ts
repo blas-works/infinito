@@ -58,7 +58,13 @@ export function useNoteSessions(reloadTrigger?: number): UseNoteSessionsReturn {
   useEffect(() => {
     const handleStorage = (e: StorageEvent): void => {
       if (e.key === REGISTRY_KEY && e.newValue) {
-        const incoming = JSON.parse(e.newValue) as NoteSessionRegistry
+        let incoming: NoteSessionRegistry
+        try {
+          incoming = JSON.parse(e.newValue) as NoteSessionRegistry
+        } catch {
+          return
+        }
+        if (!incoming || !Array.isArray(incoming.sessions)) return
         setRegistry(incoming)
         setContent(loadSessionContent(incoming.activeSessionId))
       } else if (

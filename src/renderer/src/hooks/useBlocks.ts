@@ -165,7 +165,7 @@ export function useBlocks(reloadTrigger?: number): UseBlocksReturn {
     [focusedId, blocks]
   )
 
-  const dateBlocks = blocks.filter((b) => DATE_REGEX.test(b.content))
+  const dateBlocks = useMemo(() => blocks.filter((b) => DATE_REGEX.test(b.content)), [blocks])
 
   const scrollToDate = useCallback(
     (id: string) => {
