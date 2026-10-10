@@ -1,8 +1,15 @@
 import { app, dialog, shell, BrowserWindow } from 'electron'
 import { spawn } from 'child_process'
-import { accessSync, chmodSync, constants as fsConstants, writeFileSync } from 'fs'
+import {
+  accessSync,
+  appendFileSync,
+  chmodSync,
+  constants as fsConstants,
+  mkdirSync,
+  writeFileSync
+} from 'fs'
 import { tmpdir } from 'os'
-import { join } from 'path'
+import { dirname, join } from 'path'
 import { autoUpdater } from 'electron-updater'
 import { is } from '@electron-toolkit/utils'
 import type Store from 'electron-store'
@@ -12,6 +19,13 @@ import type { UpdateInfo, UpdateMetadata, UpdatePriority, PendingUpdate } from '
 const RELEASE_URL = 'https://github.com/blas-works/infinito/releases/latest'
 const METADATA_URL =
   'https://github.com/blas-works/infinito/releases/latest/download/update-metadata.json'
+
+const BREW_CASK = 'infinito'
+const BREW_BUNDLE_ID = 'com.infinito.app'
+const BREW_PATHS = ['/opt/homebrew/bin/brew', '/usr/local/bin/brew']
+const BREW_UPDATE_TIMEOUT = 3 * 60 * 1000
+const BREW_UPGRADE_TIMEOUT = 10 * 60 * 1000
+const BREW_INFO_TIMEOUT = 60 * 1000
 
 const canAutoUpdate = process.platform !== 'linux' || !!process.env.APPIMAGE
 
@@ -28,6 +42,7 @@ let snoozeTimeout: NodeJS.Timeout | null = null
 let lastPriority: UpdatePriority = 'normal'
 let updateDownloaded = false
 let lastStatus: UpdateInfo = { available: false }
+let brewInProgress = false
 
 export function setupAutoUpdater(mainWindow: BrowserWindow, store: Store<StoreSchema>): void {
   if (is.dev) return
@@ -40,6 +55,7 @@ export function setupAutoUpdater(mainWindow: BrowserWindow, store: Store<StoreSc
 
   autoUpdater.on('update-available', (info) => {
     console.log('[AutoUpdater] Update available:', info.version)
+    if (brewInProgress) return
 
     if (process.platform === 'darwin') {
       handleBrewUpdateAvailable(info.version)
@@ -56,6 +72,7 @@ export function setupAutoUpdater(mainWindow: BrowserWindow, store: Store<StoreSc
 
   autoUpdater.on('update-not-available', () => {
     console.log('[AutoUpdater] No updates available')
+    if (brewInProgress) return
     storeRef?.set('pendingUpdate', null)
     sendUpdateStatus({ available: false })
   })
@@ -90,6 +107,8 @@ export function setupAutoUpdater(mainWindow: BrowserWindow, store: Store<StoreSc
 
   autoUpdater.on('error', (error) => {
     console.error('[AutoUpdater] Error:', error.message)
+    // A failed background check must not wipe the brew progress/error the user is looking at
+    if (brewInProgress || lastStatus.brewUpdate) return
     sendUpdateStatus({ available: false })
   })
 }
@@ -208,7 +227,7 @@ export function setMainWindow(window: BrowserWindow): void {
 }
 
 export function checkForUpdates(): void {
-  if (is.dev) return
+  if (is.dev || brewInProgress) return
 
   try {
     console.log('[AutoUpdater] Checking for updates...')
@@ -255,18 +274,14 @@ export function forceRestart(): void {
   }
 }
 
-export function runBrewUpgrade(): void {
-  if (process.platform !== 'darwin') return
+export async function runBrewUpgrade(): Promise<void> {
+  if (process.platform !== 'darwin' || brewInProgress) return
 
-  sendUpdateStatus({
-    ...lastStatus,
-    brewUpdating: true,
-    brewStep: 'preparing',
-    brewError: undefined
-  })
+  brewInProgress = true
+  logUpdate(`Starting brew upgrade to v${lastStatus.version ?? 'unknown'}`)
+  setBrewStatus({ brewUpdating: true, brewStep: 'preparing', brewError: undefined })
 
-  const brewPaths = ['/opt/homebrew/bin/brew', '/usr/local/bin/brew']
-  const brewPath = brewPaths.find((p) => {
+  const brewPath = BREW_PATHS.find((p) => {
     try {
       accessSync(p, fsConstants.X_OK)
       return true
@@ -276,86 +291,224 @@ export function runBrewUpgrade(): void {
   })
 
   if (!brewPath) {
-    sendUpdateStatus({ ...lastStatus, brewUpdating: false, brewError: 'Brew not found' })
+    failBrewUpgrade('Homebrew not found')
     return
   }
 
-  runBrewSteps(brewPath)
+  try {
+    await runBrewSteps(brewPath)
+  } catch (error) {
+    failBrewUpgrade(`Update failed: ${(error as Error).message}`)
+  }
 }
 
-function runBrewSteps(brewPath: string): void {
-  sendUpdateStatus({ ...lastStatus, brewUpdating: true, brewStep: 'updating-brew' })
+async function runBrewSteps(brewPath: string): Promise<void> {
+  const targetVersion = lastStatus.version
 
-  const brewUpdate = spawn(brewPath, ['update'], { stdio: ['ignore', 'pipe', 'pipe'] })
+  setBrewStatus({ brewStep: 'updating-brew' })
+  const update = await runBrew(brewPath, ['update'], BREW_UPDATE_TIMEOUT)
+  // A broken unrelated tap makes `brew update` exit non-zero while our tap is still refreshed,
+  // so it must not abort the upgrade
+  if (update.code !== 0) {
+    logUpdate(`brew update exited with ${update.code}${update.timedOut ? ' (timed out)' : ''}`)
+  }
 
-  let brewUpdateOutput = ''
-  brewUpdate.stdout.on('data', (data: Buffer) => {
-    brewUpdateOutput += data.toString()
-  })
-  brewUpdate.stderr.on('data', (data: Buffer) => {
-    brewUpdateOutput += data.toString()
-  })
+  const before = await getCaskVersions(brewPath)
+  if (!before?.installed) {
+    shell.openExternal(RELEASE_URL)
+    failBrewUpgrade('Infinito was not installed with Homebrew. Download the update manually.')
+    return
+  }
 
-  brewUpdate.on('close', (updateCode) => {
-    if (updateCode !== 0) {
-      console.error('[AutoUpdater] brew update failed:', brewUpdateOutput)
-      fallbackToBackgroundScript(brewPath)
-      return
+  // The app learns about a release from GitHub before the tap is bumped by CI; upgrading now
+  // would be a no-op that relaunches the same version
+  if (targetVersion && before.latest && isOlderVersion(before.latest, targetVersion)) {
+    failBrewUpgrade(`v${targetVersion} is not on Homebrew yet. Try again in a few minutes.`)
+    return
+  }
+
+  setBrewStatus({ brewStep: 'downloading' })
+  const upgrade = await runBrew(
+    brewPath,
+    ['upgrade', '--cask', BREW_CASK],
+    BREW_UPGRADE_TIMEOUT,
+    (chunk) => {
+      if (/==> (Backing|Moving|Installing|Removing|Purging)/.test(chunk)) {
+        setBrewStatus({ brewStep: 'installing' })
+      }
+    }
+  )
+
+  if (upgrade.timedOut) {
+    failBrewUpgrade(`Update timed out. See ${getUpdateLogPath()}`)
+    return
+  }
+
+  if (upgrade.code !== 0) {
+    fallbackToBackgroundScript(brewPath)
+    return
+  }
+
+  const after = await getCaskVersions(brewPath)
+  if (targetVersion && after?.installed && isOlderVersion(after.installed, targetVersion)) {
+    failBrewUpgrade(`Homebrew did not install v${targetVersion}. See ${getUpdateLogPath()}`)
+    return
+  }
+
+  setBrewStatus({ brewStep: 'restarting' })
+  storeRef?.set('pendingUpdate', null)
+  logUpdate('Upgrade finished, relaunching')
+
+  setTimeout(() => {
+    app.relaunch()
+    app.quit()
+    // Never leave the user on the overlay if something vetoes the quit
+    setTimeout(() => app.exit(0), 5000)
+  }, 1000)
+}
+
+interface BrewResult {
+  code: number | null
+  output: string
+  timedOut: boolean
+}
+
+function runBrew(
+  brewPath: string,
+  args: string[],
+  timeoutMs: number,
+  onOutput?: (chunk: string) => void
+): Promise<BrewResult> {
+  logUpdate(`$ brew ${args.join(' ')}`)
+
+  return new Promise((resolve) => {
+    let output = ''
+    let timedOut = false
+    let settled = false
+
+    const child = spawn(brewPath, args, {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: getBrewEnv(brewPath)
+    })
+
+    const finish = (code: number | null): void => {
+      if (settled) return
+      settled = true
+      clearTimeout(timer)
+      resolve({ code, output, timedOut })
     }
 
-    sendUpdateStatus({ ...lastStatus, brewUpdating: true, brewStep: 'downloading' })
+    const timer = setTimeout(() => {
+      timedOut = true
+      logUpdate(`brew ${args[0]} timed out after ${timeoutMs / 1000}s`)
+      child.kill('SIGTERM')
+      finish(null)
+    }, timeoutMs)
 
-    const brewUpgrade = spawn(brewPath, ['upgrade', '--cask', 'infinito'], {
-      stdio: ['ignore', 'pipe', 'pipe']
-    })
-
-    let upgradeOutput = ''
-    brewUpgrade.stdout.on('data', (data: Buffer) => {
+    const onData = (data: Buffer): void => {
       const chunk = data.toString()
-      upgradeOutput += chunk
-      if (chunk.includes('Installing') || chunk.includes('Moving')) {
-        sendUpdateStatus({ ...lastStatus, brewUpdating: true, brewStep: 'installing' })
-      }
+      output += chunk
+      logUpdate(chunk.trimEnd())
+      onOutput?.(chunk)
+    }
+
+    child.stdout.on('data', onData)
+    child.stderr.on('data', onData)
+    child.on('error', (error) => {
+      logUpdate(`Failed to run brew: ${error.message}`)
+      finish(null)
     })
-    brewUpgrade.stderr.on('data', (data: Buffer) => {
-      upgradeOutput += data.toString()
-    })
-
-    brewUpgrade.on('close', (upgradeCode) => {
-      if (upgradeCode !== 0) {
-        console.error('[AutoUpdater] brew upgrade failed:', upgradeOutput)
-        fallbackToBackgroundScript(brewPath)
-        return
-      }
-
-      sendUpdateStatus({ ...lastStatus, brewUpdating: true, brewStep: 'restarting' })
-
-      storeRef?.set('pendingUpdate', null)
-
-      setTimeout(() => {
-        app.relaunch()
-        app.quit()
-      }, 1000)
-    })
+    child.on('close', (code) => finish(code))
   })
 }
 
+// GUI apps on macOS get a minimal environment, and brew's auto-update and cleanup can take
+// minutes, which is what made the update look stuck on "Downloading"
+function getBrewEnv(brewPath: string): NodeJS.ProcessEnv {
+  return {
+    ...process.env,
+    PATH: `${dirname(brewPath)}:/usr/bin:/bin:/usr/sbin:/sbin`,
+    HOMEBREW_NO_AUTO_UPDATE: '1',
+    HOMEBREW_NO_INSTALL_CLEANUP: '1',
+    HOMEBREW_NO_ENV_HINTS: '1',
+    HOMEBREW_NO_ANALYTICS: '1',
+    NONINTERACTIVE: '1'
+  }
+}
+
+async function getCaskVersions(
+  brewPath: string
+): Promise<{ installed: string | null; latest: string | null } | null> {
+  const result = await runBrew(
+    brewPath,
+    ['info', '--cask', '--json=v2', BREW_CASK],
+    BREW_INFO_TIMEOUT
+  )
+  if (result.code !== 0) return null
+
+  try {
+    const json = result.output.slice(result.output.indexOf('{'))
+    const cask = JSON.parse(json).casks?.[0]
+    if (!cask) return null
+    return {
+      installed: typeof cask.installed === 'string' ? cask.installed : null,
+      latest: typeof cask.version === 'string' ? cask.version : null
+    }
+  } catch {
+    return null
+  }
+}
+
+function isOlderVersion(a: string, b: string): boolean {
+  const pa = a.split('.').map((n) => parseInt(n, 10) || 0)
+  const pb = b.split('.').map((n) => parseInt(n, 10) || 0)
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const diff = (pa[i] ?? 0) - (pb[i] ?? 0)
+    if (diff !== 0) return diff < 0
+  }
+  return false
+}
+
+function setBrewStatus(patch: Partial<UpdateInfo>): void {
+  lastStatus = { ...lastStatus, ...patch }
+  sendUpdateStatus(lastStatus)
+}
+
+function failBrewUpgrade(message: string): void {
+  logUpdate(`Brew upgrade failed: ${message}`)
+  brewInProgress = false
+  setBrewStatus({ brewUpdating: false, brewStep: undefined, brewError: message })
+}
+
+function getUpdateLogPath(): string {
+  return join(app.getPath('logs'), 'update.log')
+}
+
+function logUpdate(message: string): void {
+  console.log('[AutoUpdater]', message)
+  try {
+    const logPath = getUpdateLogPath()
+    mkdirSync(dirname(logPath), { recursive: true })
+    appendFileSync(logPath, `[${new Date().toISOString()}] ${message}\n`)
+  } catch {
+    // Logging must never break the update flow
+  }
+}
+
+// Last resort when brew fails while the app is running: quit and let a detached script retry
 function fallbackToBackgroundScript(brewPath: string): void {
-  console.log('[AutoUpdater] Falling back to background update script')
+  logUpdate('Falling back to background update script')
 
   const scriptContent = [
     '#!/bin/bash',
-    'exec > /tmp/infinito-update.log 2>&1',
+    `exec >> "${getUpdateLogPath()}" 2>&1`,
     'echo "Starting Infinito fallback update at $(date)"',
+    'export HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_CLEANUP=1 NONINTERACTIVE=1',
     'sleep 3',
-    'echo "Running brew update..."',
-    `"${brewPath}" update`,
-    'echo "Running brew upgrade --cask infinito..."',
-    `"${brewPath}" upgrade --cask infinito`,
-    'echo "Update complete. Reopening Infinito..."',
+    `"${brewPath}" upgrade --cask ${BREW_CASK}`,
+    'echo "Reopening Infinito..."',
     'sleep 1',
-    'open -a "Infinito"',
-    'echo "Cleaning up..."',
+    `open -b ${BREW_BUNDLE_ID}`,
     'rm -f "$0"'
   ].join('\n')
 
@@ -368,12 +521,12 @@ function fallbackToBackgroundScript(brewPath: string): void {
     stdio: 'ignore'
   }).unref()
 
-  sendUpdateStatus({ ...lastStatus, brewUpdating: true, brewStep: 'restarting' })
-
+  setBrewStatus({ brewStep: 'restarting' })
   storeRef?.set('pendingUpdate', null)
 
   setTimeout(() => {
     app.quit()
+    setTimeout(() => app.exit(0), 5000)
   }, 500)
 }
 
