@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.17.0](https://github.com/blas-works/infinito/compare/v1.16.1...v1.17.0) (2026-10-10)
+
+
+### Features
+
+* enhance Homebrew update process with improved logging and error handling ([5a37e41](https://github.com/blas-works/infinito/commit/5a37e417bc78b45649a60238df3944c3b3922779))
+* implement MarkdownContent component and update related sections for improved rendering ([7173bc2](https://github.com/blas-works/infinito/commit/7173bc2f508e9b2bc12e9b36559ce515b8b6d87e))
+* implement MarkdownContent component and update related sections… ([647a969](https://github.com/blas-works/infinito/commit/647a969339dcf92f717012f0eac7ee650bfcd012))
+
+
+### Bug Fixes
+
+* **updater:** evitar que la actualización por Homebrew en macOS se quede pegada ([002601f](https://github.com/blas-works/infinito/commit/002601f1ce3c0aca84a3d4694ca6e66af227d28e))
+
 ## [1.16.1](https://github.com/blas-works/infinito/compare/v1.16.0...v1.16.1) (2026-10-04)
 
 
