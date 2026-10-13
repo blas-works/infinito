@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.0](https://github.com/blas-works/infinito/compare/v1.17.0...v1.18.0) (2026-10-13)
+
+
+### Features
+
+* implement Linux tray support and update app mode handling ([4666397](https://github.com/blas-works/infinito/commit/466639711612b83a88b6b88ffd4ed35b84db47b2))
+* **tray:** habilitar modo "Menu bar app" con tray en Linux ([0f619af](https://github.com/blas-works/infinito/commit/0f619af4a075ca7e59bc2ca4e4d48c8780325469))
+
 ## [1.17.0](https://github.com/blas-works/infinito/compare/v1.16.1...v1.17.0) (2026-10-10)
 
 
