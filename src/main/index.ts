@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, nativeImage, Tray, Menu } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, nativeImage, Tray, Menu, screen } from 'electron'
 import { join } from 'path'
 import { URL, pathToFileURL } from 'url'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
@@ -34,6 +34,8 @@ const store = new Store<StoreSchema>({
 })
 
 const isMac = process.platform === 'darwin'
+const isLinux = process.platform === 'linux'
+const supportsTray = isMac || isLinux
 
 const ALLOWED_EXTERNAL_PROTOCOLS = ['https:', 'http:']
 
@@ -55,7 +57,9 @@ function safeOpenExternal(url: string): boolean {
 let mainWindow: BrowserWindow | null = null
 let menubarWindow: BrowserWindow | null = null
 let tray: Tray | null = null
+let trayMenu: Menu | null = null
 let isQuitting = false
+let menubarHiddenOnBlurAt = 0
 
 const windowKinds = new Map<number, WindowKind>()
 
@@ -94,6 +98,9 @@ function getIconPath(): string {
 }
 
 function getTrayIconPath(): string {
+  // The template icon is monochrome black, which is invisible on dark Linux panels
+  if (!isMac) return getIconPath()
+
   return is.dev
     ? join(__dirname, '../../resources/trayTemplate.png')
     : join(process.resourcesPath, 'trayTemplate.png')
@@ -130,7 +137,7 @@ function loadWindowContent(window: BrowserWindow, kind: WindowKind): void {
 }
 
 function getAppMode(): AppMode {
-  if (!isMac) return 'normal'
+  if (!supportsTray) return 'normal'
   return store.get('appMode')
 }
 
@@ -157,6 +164,25 @@ function positionMenubarWindow(): void {
   const trayBounds = tray.getBounds()
   const windowBounds = menubarWindow.getBounds()
 
+  // Linux trays don't report bounds, so anchor to the cursor (which just clicked the icon)
+  // and keep the window inside the work area. Wayland compositors ignore setPosition anyway.
+  if (trayBounds.width === 0 || trayBounds.height === 0) {
+    const cursor = screen.getCursorScreenPoint()
+    const { workArea } = screen.getDisplayNearestPoint(cursor)
+    const clamp = (value: number, min: number, max: number): number =>
+      Math.round(Math.min(Math.max(value, min), max))
+
+    const x = clamp(
+      cursor.x - windowBounds.width / 2,
+      workArea.x,
+      workArea.x + workArea.width - windowBounds.width
+    )
+    const y = clamp(cursor.y + 6, workArea.y, workArea.y + workArea.height - windowBounds.height)
+
+    menubarWindow.setPosition(x, y, false)
+    return
+  }
+
   const x = Math.round(trayBounds.x + trayBounds.width / 2 - windowBounds.width / 2)
   const y = Math.round(trayBounds.y + trayBounds.height + 6)
 
@@ -164,7 +190,7 @@ function positionMenubarWindow(): void {
 }
 
 function createMenubarWindow(): void {
-  if (!isMac || menubarWindow) return
+  if (!supportsTray || menubarWindow) return
 
   menubarWindow = new BrowserWindow({
     width: 420,
@@ -201,6 +227,7 @@ function createMenubarWindow(): void {
   menubarWindow.on('blur', () => {
     if (getAppMode() === 'menubar') {
       menubarWindow?.hide()
+      menubarHiddenOnBlurAt = Date.now()
     }
   })
 
@@ -217,7 +244,7 @@ function createMenubarWindow(): void {
 }
 
 function showMenubarWindow(): void {
-  if (!isMac || getAppMode() !== 'menubar') return
+  if (!supportsTray || getAppMode() !== 'menubar') return
 
   if (!menubarWindow || menubarWindow.isDestroyed()) {
     createMenubarWindow()
@@ -233,7 +260,7 @@ function showMenubarWindow(): void {
 }
 
 function toggleMenubarWindow(): void {
-  if (!isMac || getAppMode() !== 'menubar') return
+  if (!supportsTray || getAppMode() !== 'menubar') return
 
   if (!menubarWindow || menubarWindow.isDestroyed()) {
     createMenubarWindow()
@@ -245,6 +272,9 @@ function toggleMenubarWindow(): void {
     menubarWindow.hide()
     return
   }
+
+  // Clicking the tray icon blurs the window first (hiding it); don't reopen it right away
+  if (Date.now() - menubarHiddenOnBlurAt < 300) return
 
   showMenubarWindow()
 }
@@ -261,18 +291,34 @@ function destroyTray(): void {
   if (!tray) return
   tray.destroy()
   tray = null
+  trayMenu = null
 }
 
-function createTray(): void {
-  if (!isMac || tray) return
+function quitApp(): void {
+  isQuitting = true
+  app.quit()
+}
 
-  const trayIcon = nativeImage.createFromPath(getTrayIconPath()).resize({ width: 18, height: 18 })
-  trayIcon.setTemplateImage(true)
+function buildTrayMenu(mode: AppMode): Menu {
+  if (mode === 'normal') {
+    return Menu.buildFromTemplate([
+      {
+        label: 'Open Infinito',
+        click: () => openNormalAppWindow()
+      },
+      { type: 'separator' },
+      {
+        label: 'Switch to Menu Bar App',
+        click: () => {
+          setAppMode('menubar')
+        }
+      },
+      { type: 'separator' },
+      { label: 'Quit', click: quitApp }
+    ])
+  }
 
-  tray = new Tray(trayIcon)
-  tray.setToolTip('Infinito')
-
-  const contextMenu = Menu.buildFromTemplate([
+  return Menu.buildFromTemplate([
     {
       label: 'Show Notes',
       click: () => showMenubarWindow()
@@ -289,22 +335,47 @@ function createTray(): void {
       }
     },
     { type: 'separator' },
-    {
-      label: 'Quit',
-      click: () => {
-        isQuitting = true
-        app.quit()
-      }
-    }
+    { label: 'Quit', click: quitApp }
   ])
+}
+
+function updateTrayMenu(): void {
+  if (!tray) return
+
+  trayMenu = buildTrayMenu(getAppMode())
+
+  // Linux (StatusNotifierItem) has no right-click event; the panel shows the menu itself
+  if (!isMac) {
+    tray.setContextMenu(trayMenu)
+  }
+}
+
+function createTray(): void {
+  if (!supportsTray || tray) return
+
+  const trayIconSize = isMac ? 18 : 22
+  const trayIcon = nativeImage
+    .createFromPath(getTrayIconPath())
+    .resize({ width: trayIconSize, height: trayIconSize })
+  trayIcon.setTemplateImage(isMac)
+
+  tray = new Tray(trayIcon)
+  tray.setToolTip('Infinito')
 
   tray.on('click', () => {
-    toggleMenubarWindow()
+    if (getAppMode() === 'menubar') {
+      toggleMenubarWindow()
+      return
+    }
+
+    openNormalAppWindow()
   })
 
-  tray.on('right-click', () => {
-    tray?.popUpContextMenu(contextMenu)
-  })
+  if (isMac) {
+    tray.on('right-click', () => {
+      if (trayMenu) tray?.popUpContextMenu(trayMenu)
+    })
+  }
 }
 
 function flushMenubarSaves(): Promise<void> {
@@ -334,13 +405,14 @@ function flushMenubarSaves(): Promise<void> {
 }
 
 function setAppMode(mode: AppMode): Promise<AppMode> {
-  if (!isMac) return Promise.resolve('normal')
+  if (!supportsTray) return Promise.resolve('normal')
 
   store.set('appMode', mode)
 
   const finish = (): AppMode => {
     if (mode === 'menubar') {
       createTray()
+      updateTrayMenu()
       createMenubarWindow()
       app.dock?.hide()
       mainWindow?.hide()
@@ -356,7 +428,16 @@ function setAppMode(mode: AppMode): Promise<AppMode> {
     }
 
     destroyMenubarWindow()
-    destroyTray()
+
+    // Linux keeps a single tray for the whole process: Chromium can't re-register the
+    // StatusNotifierItem on D-Bus after destroying it, so a recreated tray stops responding
+    if (isLinux) {
+      createTray()
+      updateTrayMenu()
+    } else {
+      destroyTray()
+    }
+
     app.dock?.show()
     openNormalAppWindow()
 
@@ -424,7 +505,7 @@ function createMainWindow(showOnReady: boolean): void {
   })
 
   mainWindow.on('close', (event) => {
-    if (isMac && getAppMode() === 'menubar' && !isQuitting) {
+    if (supportsTray && getAppMode() === 'menubar' && !isQuitting) {
       event.preventDefault()
       mainWindow?.hide()
     }
@@ -524,7 +605,7 @@ if (!gotTheLock) {
         return
       }
 
-      if (isMac && getAppMode() === 'menubar') {
+      if (supportsTray && getAppMode() === 'menubar') {
         targetWindow.hide()
         return
       }
@@ -622,7 +703,7 @@ if (!gotTheLock) {
       startPolling()
     }
 
-    if (isMac) {
+    if (supportsTray) {
       setAppMode(initialMode)
     }
 
