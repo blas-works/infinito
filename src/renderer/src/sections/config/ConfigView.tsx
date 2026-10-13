@@ -23,7 +23,7 @@ import { useIsMac } from '@renderer/hooks'
 
 interface ConfigViewProps {
   settings: Settings
-  isMacOS: boolean
+  supportsTrayMode: boolean
   appMode: 'normal' | 'menubar'
   onFontSize: (size: FontSize) => void
   onFontFamily: (family: FontFamily) => void
@@ -38,7 +38,7 @@ interface ConfigViewProps {
 
 export function ConfigView({
   settings,
-  isMacOS,
+  supportsTrayMode,
   appMode,
   onFontSize,
   onFontFamily,
@@ -273,7 +273,7 @@ export function ConfigView({
         </div>
       </div>
 
-      {isMacOS && (
+      {supportsTrayMode && (
         <div className="rounded-xl bg-zinc-900/40 border border-zinc-800/30 p-4 space-y-3">
           <h2 className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">
             Window

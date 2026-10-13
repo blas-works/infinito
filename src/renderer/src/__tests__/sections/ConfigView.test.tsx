@@ -14,7 +14,7 @@ function renderConfig(overrides: Partial<ConfigViewProps> = {}): {
 } {
   const props: ConfigViewProps = {
     settings: DEFAULT_SETTINGS,
-    isMacOS: false,
+    supportsTrayMode: false,
     appMode: 'normal',
     onFontSize: vi.fn(),
     onFontFamily: vi.fn(),
@@ -79,21 +79,21 @@ describe('ConfigView', () => {
   })
 
   describe('window mode', () => {
-    it('should hide the window section outside macOS', () => {
+    it('should hide the window section when tray mode is unsupported', () => {
       renderConfig()
 
       expect(screen.queryByText('Application Mode')).not.toBeInTheDocument()
     })
 
-    it('should highlight normal mode on macOS', () => {
-      renderConfig({ isMacOS: true })
+    it('should highlight normal mode when tray mode is supported', () => {
+      renderConfig({ supportsTrayMode: true })
 
       expect(screen.getByRole('button', { name: 'Normal app' })).toHaveClass('bg-zinc-700/60')
       expect(screen.getByRole('button', { name: 'Menu bar app' })).not.toHaveClass('bg-zinc-700/60')
     })
 
-    it('should switch application mode on macOS', () => {
-      const { props } = renderConfig({ isMacOS: true, appMode: 'menubar' })
+    it('should switch application mode when tray mode is supported', () => {
+      const { props } = renderConfig({ supportsTrayMode: true, appMode: 'menubar' })
 
       expect(screen.getByRole('button', { name: 'Menu bar app' })).toHaveClass('bg-zinc-700/60')
 

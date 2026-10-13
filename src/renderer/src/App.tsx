@@ -16,6 +16,7 @@ export default function App(): React.JSX.Element {
   const [isPinned, setIsPinned] = useState(false)
   const [version, setVersion] = useState('0.0.0')
   const [isMacOS, setIsMacOS] = useState(false)
+  const [supportsTrayMode, setSupportsTrayMode] = useState(false)
   const [windowKind, setWindowKind] = useState<'main' | 'menubar'>('main')
   const [appMode, setAppMode] = useState<'normal' | 'menubar'>('normal')
   const [reloadTrigger, setReloadTrigger] = useState(0)
@@ -67,9 +68,11 @@ export default function App(): React.JSX.Element {
       .getPlatform()
       .then((platform) => {
         const isMac = platform === 'darwin'
+        const hasTray = isMac || platform === 'linux'
         setIsMacOS(isMac)
+        setSupportsTrayMode(hasTray)
         document.documentElement.classList.toggle('platform-linux', !isMac)
-        if (!isMac) {
+        if (!hasTray) {
           setAppMode('normal')
           return
         }
@@ -81,6 +84,7 @@ export default function App(): React.JSX.Element {
       })
       .catch(() => {
         setIsMacOS(false)
+        setSupportsTrayMode(false)
         setAppMode('normal')
       })
 
@@ -212,7 +216,7 @@ export default function App(): React.JSX.Element {
               {showConfig ? (
                 <ConfigView
                   settings={settings}
-                  isMacOS={isMacOS}
+                  supportsTrayMode={supportsTrayMode}
                   appMode={appMode}
                   onFontSize={setFontSize}
                   onFontFamily={setFontFamily}
